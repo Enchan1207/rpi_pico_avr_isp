@@ -32,17 +32,56 @@ int main() {
 
     // プログラミング許可命令を送信
     const uint8_t programmableCheckCmd[] = {0xAC, 0x53, 0x00, 0x00};
-    uint8_t response[4] = {0};
-    spi_write_read_blocking(spi, programmableCheckCmd, response, sizeof(programmableCheckCmd));
+    uint8_t programmableCheckResponse[4] = {0};
+    spi_write_read_blocking(spi, programmableCheckCmd, programmableCheckResponse, sizeof(programmableCheckCmd));
+
+    // 正しく送信できていれば、第3バイトに0x53が入るはず
+    if (programmableCheckResponse[2] != 0x53) {
+        puts("not sync");
+        return 1;
+    }
+    puts("MCU connected");
+
+    // デバイス識別子を取得
+    uint8_t identifierGetCmd[] = {0x30, 0x00, 0x00};
+    uint8_t identifierGetResponse[3] = {0};
+    for (uint8_t i = 0; i < sizeof(identifierGetResponse); i++) {
+        identifierGetCmd[2] = i;
+        spi_write_blocking(spi, identifierGetCmd, sizeof(identifierGetCmd));
+        spi_read_blocking(spi, 0x00, identifierGetResponse + i, 1);
+    }
+
+    // ヒューズビットを取得 (ext -> high -> low)
+    uint8_t fuseGetResponse[3] = {0};
+
+    const uint8_t extFuseGetCmd[] = {0x50, 0x08, 0x00};
+    spi_write_blocking(spi, extFuseGetCmd, sizeof(extFuseGetCmd));
+    spi_read_blocking(spi, 0x00, fuseGetResponse, 1);
+
+    const uint8_t highFuseGetCmd[] = {0x58, 0x08, 0x00};
+    spi_write_blocking(spi, highFuseGetCmd, sizeof(highFuseGetCmd));
+    spi_read_blocking(spi, 0x00, fuseGetResponse + 1, 1);
+
+    const uint8_t lowFuseGetCmd[] = {0x50, 0x00, 0x00};
+    spi_write_blocking(spi, lowFuseGetCmd, sizeof(lowFuseGetCmd));
+    spi_read_blocking(spi, 0x00, fuseGetResponse + 2, 1);
 
     // プログラミングを終了
     gpio_put(CS_PIN, true);
 
-    // レスポンスをコンソールに表示
-    for (uint8_t i = 0; i < 4; i++) {
-        printf("%02X ", response[i]);
+    // デバイス識別子をコンソールに表示
+    printf("device identifier: ");
+    for (uint8_t i = 0; i < sizeof(identifierGetResponse); i++) {
+        printf("%02X ", identifierGetResponse[i]);
     }
-    puts("\n");
+    puts("");
+
+    // ヒューズビットをコンソールに表示
+    printf("fuse bits(ext, high, low): ");
+    for (uint8_t i = 0; i < sizeof(fuseGetResponse); i++) {
+        printf("%02X ", fuseGetResponse[i]);
+    }
+    puts("");
 
     while (true) {
         sleep_ms(1000);
