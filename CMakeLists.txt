@@ -11,7 +11,7 @@ include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 ## プロジェクト構成
 project(rpi_pico_avr_isp
     VERSION 0.1.0
-    DESCRIPTION "Blink for Raspberry pi pico"
+    DESCRIPTION "Make Raspberry Pi Pico to AVR ISP"
     LANGUAGES C CXX ASM
 )
 
