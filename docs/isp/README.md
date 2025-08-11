@@ -10,7 +10,51 @@ ISPは4byteのコマンドと1byteのレスポンスをターゲットMCUと書�
 
 ## 書込みシーケンス
 
-under construction
+基本的な書込みシーケンスを以下に示します。
+
+1. `RESET`, `SCK` をLOWにする。
+2. 20ms以上待機したのち、コマンド _Programming Enable_ を送信し、同期を確認する。
+3. フラッシュメモリにデータを書き込む。
+4. (必要ならば) EEPROMにデータを書き込む。
+5. (必要ならば) フラッシュメモリ・EEPROMを読み出し、データが正しく書き込まれたか確認する。
+6. `RESET` をHIGHにしてISPを終了する。
+
+### ページ書込み
+
+フラッシュメモリは **ページ** と呼ばれる単位で分割され、各ページはさらに **ワード** という単位で区切られています。
+
+データの読み込みはワード単位あるいはバイト単位で行うことができますが、
+書き込む際はページごと一旦消去し、書き込む必要があります。(少しずつ書き換えるということができません)
+
+このため、ISPにおいては **ページバッファ**と呼ばれる一時領域にデータを蓄積し、
+最後にコマンド _Write Program Memory Page_ を送信してページ全体を書き換えるという方法をとっています。
+
+たとえばATtiny2313の場合、フラッシュメモリの構造はデータシートTable 68から
+
+- フラッシュメモリサイズ: 1024ワード
+- ページサイズ: 16ワード (4bit)
+- ページ数: 64 (1024 / 16) (6bit)
+
+とあります。
+よってアドレス空間は10bit、うち下位4bitは各ページ内のアドレスとなります。
+
+```text
+|--- page ---|- word -|
+| 9 8 7 6 5 4| 3 2 1 0|
+```
+
+ATmega328Pの場合、Table 27-9 から
+
+- フラッシュメモリサイズ: 16384ワード
+- ページサイズ: 64ワード (6bit)
+- ページ数: 256 (16384 / 64) (8bit)
+
+となるため、アドレス空間は14bit、うち下位6bitは各ページ内のアドレスとなります。
+
+```text
+|----- page -----|--- word ---|
+| D C B A 9 8 7 6| 5 4 3 2 1 0|
+```
 
 ## コマンドリファレンス
 
@@ -196,58 +240,3 @@ EEPROMの指定されたアドレスにデータを書き込みます。
 
 - コマンド: `$F0 $00 $00 xx`
 - レスポンス: `0x01` なら動作中、`0x00` なら完了
-
-ATtiny2313
-
-| command                    | data                                            | description                      |
-| -------------------------- | ----------------------------------------------- | -------------------------------- |
-| Programming Enable         | `$AC $53 $00 $00` | シリアルプログラミングを有効化           |
-| Chip Erase                 | `$AC $80 $00 $00` | EEPROMとFlashを消去                  |
-| Read Program Memory (low)  | `$20 am al data_out` | プログラムメモリのワードアドレスa\:bからデータoを読み出す  |
-| Read Program Memory (high) | `$28 am al data_out` | プログラムメモリのワードアドレスa\:bからデータoを読み出す  |
-| Load Program Memory Page (low) | `$40 $00 al data_in` | プログラムメモリページにデータを書き込む（Lowバイト先行）   |
-| Load Program Memory Page (high) | `$48 $00 al data_in` | プログラムメモリページにデータを書き込む（Lowバイト先行）   |
-| Write Program Memory Page | `$4C 000000aa aaaaxxxx $00` | 指定アドレスのプログラムメモリページを書き込み          |
-| Read EEPROM Memory        | `$A0 am al data_out` | EEPROMからデータを読み出す                 |
-| Write EEPROM Memory       | `$C0 am al data_in` | EEPROMにデータを書き込む                  |
-| Load EEPROM Memory Page   | `$C1 $00 000000aa data_in` | EEPROMページバッファにデータをロード            |
-| Write EEPROM Memory Page  | `$C2 000000aa aaaaaa00 $00` | EEPROMページを書き込み                   |
-| Read Lock bits            | `$58 $00 $00 data_out` | ロックビットを読み出す（0=プログラム済み, 1=未プログラム） |
-| Write Lock bits           | `$AC $E0 $00 data_in` | ロックビットを書き込み（0=プログラム, 1=未プログラム）   |
-| Read Signature Byte       | `$30 $00 000000aa data_out` | シグネチャバイトを読み出す                    |
-| Write Fuse bits           | `$AC $A0 $00 data_in` | Fuseビットを書き込み（0=プログラム, 1=未プログラム）  |
-| Write Fuse High bits      | `$AC $A8 $00 data_in` | Fuse Highビットを書き込み                |
-| Write Extended Fuse Bits  | `$AC $A4 $00 data_in` | Extended Fuseビットを書き込み            |
-| Read Fuse bits            | `$50 $00 $00 data_out` | Fuseビットを読み出す                     |
-| Read Fuse High bits       | `$58 $08 $00 data_out` | Fuse Highビットを読み出す                |
-| Read Extended Fuse Bits   | `$50 $08 $00 data_out` | Extended Fuseビットを読み出す            |
-| Read Calibration Byte     | `$38 $00 $00 data_out` | キャリブレーションバイトを読み出す                |
-| Poll RDY/BSY              | `$F0 $00 $00 data_out` | o=1なら動作中、0なら完了                   |
-
-ATmega328P
-
-| command                         | data                             | arguments                     | description                    |
-| ------------------------------- | -------------------------------- | ----------------------------- | ------------------------------ |
-| Programming enable              | `$AC $53 $00 $00`                | –                             | シリアルプログラミングを有効化                |
-| Chip erase                      | `$AC $80 $00 $00`                | –                             | プログラムメモリおよびEEPROMを消去           |
-| Read program memory (low)       | `$20 am al data_out`   | adr\_MSB/adr\_LSB / data\_out | プログラムメモリLowバイトを読み出す            |
-| Read program memory (high)      | `$28 am al data_out`   | adr\_MSB/adr\_LSB / data\_out | プログラムメモリHighバイトを読み出す           |
-| Load program memory page (low)  | `$40 $00 al low_data_in`    | adr\_LSB / low\_data\_in      | プログラムメモリページにLowバイトを書き込む        |
-| Load program memory page (high) | `$48 $00 al high_data_in`   | adr\_LSB / high\_data\_in     | プログラムメモリページにHighバイトを書き込む       |
-| Write program memory page       | `$4C am al $00`        | adr\_MSB/adr\_LSB             | プログラムメモリページを書き込む               |
-| Read EEPROM memory              | `$A0 000000aa aaaaaaaa data_out` | a=アドレス / data\_out            | EEPROMからデータを読み出す               |
-| Write EEPROM memory             | `$C0 000000aa aaaaaaaa data_in`  | a=アドレス / data\_in             | EEPROMにデータを書き込む                |
-| Load EEPROM memory page         | `$C1 $00 000000aa data_in`       | a=アドレス / data\_in             | EEPROMページバッファにデータをロード          |
-| Write EEPROM memory page        | `$C2 000000aa aaaaaa00 $00`      | a=アドレス                        | EEPROMページを書き込む                 |
-| Read lock bits                  | `$58 $00 $00 data_out`           | data\_out=ロックビット              | ロックビットを読み出す（0=プログラム, 1=未プログラム） |
-| Write lock bits                 | `$AC $E0 $00 data_in`            | data\_in                      | ロックビットを書き込む                    |
-| Read signature byte             | `$30 $00 000000aa data_out`      | a=アドレス / data\_out            | シグネチャバイトを読み出す                  |
-| Write fuse bits                 | `$AC $A0 $00 data_in`            | data\_in                      | Fuseビットを書き込む                   |
-| Write fuse high bits            | `$AC $A8 $00 data_in`            | data\_in                      | Fuse Highビットを書き込む              |
-| Write extended fuse bits        | `$AC $A4 $00 data_in`            | data\_in                      | Extended Fuseビットを書き込む          |
-| Read fuse bits                  | `$50 $00 $00 data_out`           | data\_out                     | Fuseビットを読み出す                   |
-| Read fuse high bits             | `$58 $08 $00 data_out`           | data\_out                     | Fuse Highビットを読み出す              |
-| Read extended fuse bits         | `$50 $08 $00 data_out`           | data\_out                     | Extended Fuseビットを読み出す          |
-| Read calibration byte           | `$38 $00 $00 data_out`           | data\_out                     | キャリブレーションバイトを読み出す              |
-| Poll RDY/BSY                    | `$F0 $00 $00 data_out`           | o=状態                          | ビジー状態を確認（1=動作中, 0=完了）          |
-| Load extended address byte      | `$4D $00 ext_addr $00`           | ext\_addr=拡張アドレス              | 拡張アドレスバイトをロード                  |
