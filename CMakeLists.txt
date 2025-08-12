@@ -1,11 +1,14 @@
-#
-# CMake project for Raspberry Pi Pico
-#
-# reference: https://github.com/raspberrypi/pico-examples/blob/master/CMakeLists.txt
-#
 cmake_minimum_required(VERSION 3.12)
 
-include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
+if(DEFINED CMAKE_TOOLCHAIN_FILE)
+    set(BUILD_FOR_TARGET true)
+else()
+    set(BUILD_FOR_TARGET false)
+endif()
+
+if(${BUILD_FOR_TARGET})
+    include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
+endif()
 
 project(rpi_pico_avr_isp
     VERSION 0.1.0
@@ -21,7 +24,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(PICO_BOARD pico)
 set(PICO_PLATFORM rp2040)
 
-pico_sdk_init()
+if(${BUILD_FOR_TARGET})
+    pico_sdk_init()
+endif()
 
 add_compile_options(
     -Wno-format
