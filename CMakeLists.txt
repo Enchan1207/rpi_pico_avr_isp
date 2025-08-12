@@ -43,3 +43,8 @@ if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
 endif()
 
 add_subdirectory(src)
+
+if(NOT ${BUILD_FOR_TARGET})
+    enable_testing()
+    add_subdirectory(tests)
+endif()
