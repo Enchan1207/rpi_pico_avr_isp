@@ -1,0 +1,19 @@
+name: unit test
+on:
+  - push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v5
+
+      - name: configure CMake
+        run: cmake --preset host
+
+      - name: build
+        run: cmake --build --preset host
+
+      - name: test
+        run: ctest --preset host
