@@ -60,17 +60,17 @@ uint8_t avr_isp_read_flash_high(uint16_t address);
 
 /**
  * @brief フラッシュメモリページに書き込み（下位バイト）
- * @param page_addr ページ内アドレス
+ * @param pageAddr ページ内アドレス
  * @param data 書き込むデータ
  */
-void avr_isp_load_flash_page_low(uint8_t page_addr, uint8_t data);
+void avr_isp_load_flash_page_low(uint8_t pageAddr, uint8_t data);
 
 /**
  * @brief フラッシュメモリページに書き込み（上位バイト）
- * @param page_addr ページ内アドレス
+ * @param pageAddr ページ内アドレス
  * @param data 書き込むデータ
  */
-void avr_isp_load_flash_page_high(uint8_t page_addr, uint8_t data);
+void avr_isp_load_flash_page_high(uint8_t pageAddr, uint8_t data);
 
 /**
  * @brief フラッシュメモリページを書き込み
@@ -132,13 +132,13 @@ void avr_isp_write_fuse_ext(uint8_t fuse);
  * @brief ロックビット読み込み
  * @return ロックビット
  */
-uint8_t avr_isp_read_lock_bits(void);
+uint8_t avr_isp_read_lockBits(void);
 
 /**
  * @brief ロックビット書き込み
- * @param lock_bits ロックビット
+ * @param lockBits ロックビット
  */
-void avr_isp_write_lock_bits(uint8_t lock_bits);
+void avr_isp_write_lockBits(uint8_t lockBits);
 
 /**
  * @brief 発振器キャリブレーションバイト読み込み

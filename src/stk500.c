@@ -88,7 +88,7 @@ static uint16_t getExpectedPayloadLength(uint8_t command) {
     }
 }
 
-void stk500_init(void) {
+void stk500Init(void) {
     programmerState.currentAddress = 0;
     programmerState.inProgrammingMode = false;
     memset(programmerState.deviceParameters, 0, sizeof(programmerState.deviceParameters));
@@ -355,7 +355,7 @@ static void executeCommand(void) {
     }
 }
 
-bool stk500_process_commands(void) {
+bool stk500ProcessCommands(void) {
     int receivedByte = getchar_timeout_us(2000000);
 
     if (receivedByte == PICO_ERROR_TIMEOUT) {
@@ -381,7 +381,7 @@ bool stk500_process_commands(void) {
             if (protocolState.commandBuffer.command == CMD_PROG_PAGE &&
                 protocolState.commandBuffer.payloadReceived == 3) {
                 uint16_t pageSize = (uint16_t)((protocolState.commandBuffer.payload[0] << 8) |
-                                                protocolState.commandBuffer.payload[1]);
+                                               protocolState.commandBuffer.payload[1]);
                 protocolState.commandBuffer.expectedPayloadLength = 3 + pageSize;
             }
 

@@ -13,10 +13,10 @@ int main() {
     stdio_init_all();
 
     avr_isp_init();
-    stk500_init();
+    stk500Init();
 
     while (true) {
-        stk500_process_commands();
+        stk500ProcessCommands();
     }
 
     return 0;

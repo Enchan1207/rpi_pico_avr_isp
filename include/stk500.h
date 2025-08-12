@@ -14,13 +14,13 @@ extern "C" {
 /**
  * @brief STK500v1プロトコルハンドラーの初期化
  */
-void stk500_init(void);
+void stk500Init(void);
 
 /**
  * @brief STK500v1プロトコルのコマンド処理
  * @return true: 継続、false: 終了
  */
-bool stk500_process_commands(void);
+bool stk500ProcessCommands(void);
 
 #ifdef __cplusplus
 }

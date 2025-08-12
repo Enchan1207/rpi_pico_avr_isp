@@ -26,11 +26,11 @@
 #define ISP_CMD_READ_LOCK_BITS {0x58, 0x00, 0x00, 0x00}
 #define ISP_CMD_READ_OSC_CAL {0x38, 0x00, 0x00, 0x00}
 
-static spi_inst_t* spi_instance = spi0;
+static spi_inst_t* spi = spi0;
 
 void avr_isp_init(void) {
-    spi_init(spi_instance, 1000000);
-    spi_set_format(spi_instance, 8, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
+    spi_init(spi, 1000000);
+    spi_set_format(spi, 8, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
 
     gpio_init(CS_PIN);
     gpio_set_dir(CS_PIN, GPIO_OUT);
@@ -50,7 +50,7 @@ bool avr_isp_enter_programming_mode(void) {
     uint8_t cmd[] = ISP_CMD_PROGRAMMING_ENABLE;
     uint8_t response[4];
 
-    spi_write_read_blocking(spi_instance, cmd, response, 4);
+    spi_write_read_blocking(spi, cmd, response, 4);
 
     return response[2] == 0x53;
 }
@@ -61,7 +61,7 @@ void avr_isp_leave_programming_mode(void) {
 
 uint8_t avr_isp_send_command(uint8_t cmd[4]) {
     uint8_t response[4];
-    spi_write_read_blocking(spi_instance, cmd, response, 4);
+    spi_write_read_blocking(spi, cmd, response, 4);
     return response[3];
 }
 
@@ -95,13 +95,13 @@ uint8_t avr_isp_read_flash_high(uint16_t address) {
     return avr_isp_send_command(cmd);
 }
 
-void avr_isp_load_flash_page_low(uint8_t page_addr, uint8_t data) {
-    uint8_t cmd[] = {0x40, 0x00, page_addr, data};
+void avr_isp_load_flash_page_low(uint8_t pageAddr, uint8_t data) {
+    uint8_t cmd[] = {0x40, 0x00, pageAddr, data};
     avr_isp_send_command(cmd);
 }
 
-void avr_isp_load_flash_page_high(uint8_t page_addr, uint8_t data) {
-    uint8_t cmd[] = {0x48, 0x00, page_addr, data};
+void avr_isp_load_flash_page_high(uint8_t pageAddr, uint8_t data) {
+    uint8_t cmd[] = {0x48, 0x00, pageAddr, data};
     avr_isp_send_command(cmd);
 }
 
@@ -157,13 +157,13 @@ void avr_isp_write_fuse_ext(uint8_t fuse) {
     sleep_ms(50);
 }
 
-uint8_t avr_isp_read_lock_bits(void) {
+uint8_t avr_isp_read_lockBits(void) {
     uint8_t cmd[] = ISP_CMD_READ_LOCK_BITS;
     return avr_isp_send_command(cmd);
 }
 
-void avr_isp_write_lock_bits(uint8_t lock_bits) {
-    uint8_t cmd[] = {0xAC, 0xE0, 0x00, lock_bits};
+void avr_isp_write_lockBits(uint8_t lockBits) {
+    uint8_t cmd[] = {0xAC, 0xE0, 0x00, lockBits};
     avr_isp_send_command(cmd);
     sleep_ms(50);
 }
