@@ -24,38 +24,38 @@ typedef enum {
 typedef struct {
     uint8_t command;
     uint8_t payload[STK500_MAX_PAYLOAD_SIZE];
-    uint16_t payload_length;
-    uint16_t payload_received;
-    uint16_t expected_payload_length;
+    uint16_t payloadLength;
+    uint16_t payloadReceived;
+    uint16_t expectedPayloadLength;
 } stk500_command_buffer_t;
 
 /**
  * @brief プログラマーのパラメータ構造体
  */
 typedef struct {
-    uint16_t current_address;
-    bool in_programming_mode;
-    uint8_t device_parameters[20];
-    uint8_t device_ext_parameters[4];
-} programmer_state_t;
+    uint16_t currentAddress;
+    bool inProgrammingMode;
+    uint8_t deviceParameters[20];
+    uint8_t deviceExtParameters[4];
+} programmerState_t;
 
 /**
  * @brief STK500プロトコル状態管理構造体
  */
 typedef struct {
     stk500_state_t state;
-    stk500_command_buffer_t command_buffer;
-} stk500_protocol_state_t;
+    stk500_command_buffer_t commandBuffer;
+} stk500_protocolState_t;
 
-static programmer_state_t programmer_state = {0};
-static stk500_protocol_state_t protocol_state = {0};
+static programmerState_t programmerState = {0};
+static stk500_protocolState_t protocolState = {0};
 
 /**
  * @brief コマンドの期待ペイロード長を取得
  * @param command コマンドバイト
  * @return 期待ペイロード長（バイト数）
  */
-static uint16_t get_expected_payload_length(uint8_t command) {
+static uint16_t getExpectedPayloadLength(uint8_t command) {
     switch (command) {
         case CMD_GET_SYNC:
         case CMD_GET_SIGNON:
@@ -89,19 +89,19 @@ static uint16_t get_expected_payload_length(uint8_t command) {
 }
 
 void stk500_init(void) {
-    programmer_state.current_address = 0;
-    programmer_state.in_programming_mode = false;
-    memset(programmer_state.device_parameters, 0, sizeof(programmer_state.device_parameters));
-    memset(programmer_state.device_ext_parameters, 0, sizeof(programmer_state.device_ext_parameters));
+    programmerState.currentAddress = 0;
+    programmerState.inProgrammingMode = false;
+    memset(programmerState.deviceParameters, 0, sizeof(programmerState.deviceParameters));
+    memset(programmerState.deviceExtParameters, 0, sizeof(programmerState.deviceExtParameters));
 
-    protocol_state.state = STK_STATE_WAITING_COMMAND;
-    memset(&protocol_state.command_buffer, 0, sizeof(protocol_state.command_buffer));
+    protocolState.state = STK_STATE_WAITING_COMMAND;
+    memset(&protocolState.commandBuffer, 0, sizeof(protocolState.commandBuffer));
 }
 
 /**
  * @brief GetSyncコマンドを処理
  */
-static void handle_get_sync(void) {
+static void handleGetSync(void) {
     putchar(RESP_STK_INSYNC);
     putchar(RESP_STK_OK);
 }
@@ -109,12 +109,12 @@ static void handle_get_sync(void) {
 /**
  * @brief GetSignOnコマンドを処理
  */
-static void handle_get_signon(void) {
-    const char* sign_on_message = "AVR STK";
+static void handleGetSignon(void) {
+    const char* signOnMessage = "AVR STK";
 
     putchar(RESP_STK_INSYNC);
-    for (int i = 0; i < strlen(sign_on_message); i++) {
-        putchar(sign_on_message[i]);
+    for (int i = 0; i < strlen(signOnMessage); i++) {
+        putchar(signOnMessage[i]);
     }
     putchar(RESP_STK_OK);
 }
@@ -122,8 +122,8 @@ static void handle_get_signon(void) {
 /**
  * @brief SetDeviceコマンドを処理
  */
-static void handle_set_device(void) {
-    memcpy(programmer_state.device_parameters, protocol_state.command_buffer.payload, 20);
+static void handleSetDevice(void) {
+    memcpy(programmerState.deviceParameters, protocolState.commandBuffer.payload, 20);
 
     putchar(RESP_STK_INSYNC);
     putchar(RESP_STK_OK);
@@ -132,8 +132,8 @@ static void handle_set_device(void) {
 /**
  * @brief SetDeviceExtコマンドを処理
  */
-static void handle_set_device_ext(void) {
-    memcpy(programmer_state.device_ext_parameters, protocol_state.command_buffer.payload, 4);
+static void handleSetDeviceExt(void) {
+    memcpy(programmerState.deviceExtParameters, protocolState.commandBuffer.payload, 4);
 
     putchar(RESP_STK_INSYNC);
     putchar(RESP_STK_OK);
@@ -142,9 +142,9 @@ static void handle_set_device_ext(void) {
 /**
  * @brief EnterProgModeコマンドを処理
  */
-static void handle_enter_progmode(void) {
+static void handleEnterProgmode(void) {
     if (avr_isp_enter_programming_mode()) {
-        programmer_state.in_programming_mode = true;
+        programmerState.inProgrammingMode = true;
         putchar(RESP_STK_INSYNC);
         putchar(RESP_STK_OK);
     } else {
@@ -156,9 +156,9 @@ static void handle_enter_progmode(void) {
 /**
  * @brief LeaveProgModeコマンドを処理
  */
-static void handle_leave_progmode(void) {
+static void handleLeaveProgmode(void) {
     avr_isp_leave_programming_mode();
-    programmer_state.in_programming_mode = false;
+    programmerState.inProgrammingMode = false;
 
     putchar(RESP_STK_INSYNC);
     putchar(RESP_STK_OK);
@@ -167,7 +167,7 @@ static void handle_leave_progmode(void) {
 /**
  * @brief ChipEraseコマンドを処理
  */
-static void handle_chip_erase(void) {
+static void handleChipErase(void) {
     if (avr_isp_chip_erase()) {
         putchar(RESP_STK_INSYNC);
         putchar(RESP_STK_OK);
@@ -180,7 +180,7 @@ static void handle_chip_erase(void) {
 /**
  * @brief CheckAutoincコマンドを処理
  */
-static void handle_check_autoinc(void) {
+static void handleCheckAutoinc(void) {
     putchar(RESP_STK_INSYNC);
     putchar(RESP_STK_OK);
 }
@@ -188,11 +188,11 @@ static void handle_check_autoinc(void) {
 /**
  * @brief LoadAddressコマンドを処理
  */
-static void handle_load_address(void) {
-    uint8_t addr_low = protocol_state.command_buffer.payload[0];
-    uint8_t addr_high = protocol_state.command_buffer.payload[1];
+static void handleLoadAddress(void) {
+    uint8_t addrLow = protocolState.commandBuffer.payload[0];
+    uint8_t addrHigh = protocolState.commandBuffer.payload[1];
 
-    programmer_state.current_address = (uint16_t)((addr_high << 8) | addr_low);
+    programmerState.currentAddress = (uint16_t)((addrHigh << 8) | addrLow);
 
     putchar(RESP_STK_INSYNC);
     putchar(RESP_STK_OK);
@@ -201,8 +201,8 @@ static void handle_load_address(void) {
 /**
  * @brief Universalコマンドを処理
  */
-static void handle_universal(void) {
-    uint8_t response = avr_isp_send_command(protocol_state.command_buffer.payload);
+static void handleUniversal(void) {
+    uint8_t response = avr_isp_send_command(protocolState.commandBuffer.payload);
 
     putchar(RESP_STK_INSYNC);
     putchar(response);
@@ -212,25 +212,25 @@ static void handle_universal(void) {
 /**
  * @brief ReadFlashコマンドを処理
  */
-static void handle_read_flash(void) {
-    uint8_t low_byte = avr_isp_read_flash_low(programmer_state.current_address);
-    uint8_t high_byte = avr_isp_read_flash_high(programmer_state.current_address);
+static void handleReadFlash(void) {
+    uint8_t lowByte = avr_isp_read_flash_low(programmerState.currentAddress);
+    uint8_t highByte = avr_isp_read_flash_high(programmerState.currentAddress);
 
-    programmer_state.current_address++;
+    programmerState.currentAddress++;
 
     putchar(RESP_STK_INSYNC);
-    putchar(low_byte);
-    putchar(high_byte);
+    putchar(lowByte);
+    putchar(highByte);
     putchar(RESP_STK_OK);
 }
 
 /**
  * @brief ReadDataコマンドを処理
  */
-static void handle_read_data(void) {
-    uint8_t data = avr_isp_read_eeprom(programmer_state.current_address);
+static void handleReadData(void) {
+    uint8_t data = avr_isp_read_eeprom(programmerState.currentAddress);
 
-    programmer_state.current_address++;
+    programmerState.currentAddress++;
 
     putchar(RESP_STK_INSYNC);
     putchar(data);
@@ -240,7 +240,7 @@ static void handle_read_data(void) {
 /**
  * @brief ReadSignコマンドを処理
  */
-static void handle_read_sign(void) {
+static void handleReadSign(void) {
     uint8_t signature[3];
 
     if (avr_isp_read_signature(signature)) {
@@ -258,28 +258,28 @@ static void handle_read_sign(void) {
 /**
  * @brief ProgPageコマンドを処理
  */
-static void handle_prog_page(void) {
-    uint8_t bytes_high = protocol_state.command_buffer.payload[0];
-    uint8_t bytes_low = protocol_state.command_buffer.payload[1];
-    uint8_t memtype = protocol_state.command_buffer.payload[2];
+static void handleProgPage(void) {
+    uint8_t bytesHigh = protocolState.commandBuffer.payload[0];
+    uint8_t bytesLow = protocolState.commandBuffer.payload[1];
+    uint8_t memtype = protocolState.commandBuffer.payload[2];
 
-    uint16_t byte_count = (uint16_t)((bytes_high << 8) | bytes_low);
-    uint8_t* page_data = &protocol_state.command_buffer.payload[3];
+    uint16_t byteCount = (uint16_t)((bytesHigh << 8) | bytesLow);
+    uint8_t* pageData = &protocolState.commandBuffer.payload[3];
 
     if (memtype == MEMTYPE_FLASH) {
-        for (uint16_t i = 0; i < byte_count; i += 2) {
-            uint8_t low_byte = page_data[i];
-            uint8_t high_byte = page_data[i + 1];
+        for (uint16_t i = 0; i < byteCount; i += 2) {
+            uint8_t lowByte = pageData[i];
+            uint8_t highByte = pageData[i + 1];
 
-            avr_isp_load_flash_page_low(i / 2, low_byte);
-            avr_isp_load_flash_page_high(i / 2, high_byte);
+            avr_isp_load_flash_page_low(i / 2, lowByte);
+            avr_isp_load_flash_page_high(i / 2, highByte);
         }
 
-        avr_isp_write_flash_page(programmer_state.current_address);
+        avr_isp_write_flash_page(programmerState.currentAddress);
     } else if (memtype == MEMTYPE_EEPROM) {
-        for (uint16_t i = 0; i < byte_count; i++) {
-            uint8_t data_byte = page_data[i];
-            avr_isp_write_eeprom(programmer_state.current_address + i, data_byte);
+        for (uint16_t i = 0; i < byteCount; i++) {
+            uint8_t dataByte = pageData[i];
+            avr_isp_write_eeprom(programmerState.currentAddress + i, dataByte);
         }
     }
 
@@ -290,62 +290,62 @@ static void handle_prog_page(void) {
 /**
  * @brief コマンド処理を実行
  */
-static void execute_command(void) {
-    switch (protocol_state.command_buffer.command) {
+static void executeCommand(void) {
+    switch (protocolState.commandBuffer.command) {
         case CMD_GET_SYNC:
-            handle_get_sync();
+            handleGetSync();
             break;
 
         case CMD_GET_SIGNON:
-            handle_get_signon();
+            handleGetSignon();
             break;
 
         case CMD_SET_DEVICE:
-            handle_set_device();
+            handleSetDevice();
             break;
 
         case CMD_SET_DEVICE_EXT:
-            handle_set_device_ext();
+            handleSetDeviceExt();
             break;
 
         case CMD_ENTER_PROGMODE:
-            handle_enter_progmode();
+            handleEnterProgmode();
             break;
 
         case CMD_LEAVE_PROGMODE:
-            handle_leave_progmode();
+            handleLeaveProgmode();
             break;
 
         case CMD_CHIP_ERASE:
-            handle_chip_erase();
+            handleChipErase();
             break;
 
         case CMD_CHECK_AUTOINC:
-            handle_check_autoinc();
+            handleCheckAutoinc();
             break;
 
         case CMD_LOAD_ADDRESS:
-            handle_load_address();
+            handleLoadAddress();
             break;
 
         case CMD_UNIVERSAL:
-            handle_universal();
+            handleUniversal();
             break;
 
         case CMD_READ_FLASH:
-            handle_read_flash();
+            handleReadFlash();
             break;
 
         case CMD_READ_DATA:
-            handle_read_data();
+            handleReadData();
             break;
 
         case CMD_READ_SIGN:
-            handle_read_sign();
+            handleReadSign();
             break;
 
         case CMD_PROG_PAGE:
-            handle_prog_page();
+            handleProgPage();
             break;
 
         default:
@@ -356,50 +356,50 @@ static void execute_command(void) {
 }
 
 bool stk500_process_commands(void) {
-    int received_byte = getchar_timeout_us(2000000);
+    int receivedByte = getchar_timeout_us(2000000);
 
-    if (received_byte == PICO_ERROR_TIMEOUT) {
+    if (receivedByte == PICO_ERROR_TIMEOUT) {
         return true;
     }
 
-    switch (protocol_state.state) {
+    switch (protocolState.state) {
         case STK_STATE_WAITING_COMMAND:
-            protocol_state.command_buffer.command = (uint8_t)received_byte;
-            protocol_state.command_buffer.expected_payload_length = get_expected_payload_length((uint8_t)received_byte);
-            protocol_state.command_buffer.payload_received = 0;
+            protocolState.commandBuffer.command = (uint8_t)receivedByte;
+            protocolState.commandBuffer.expectedPayloadLength = getExpectedPayloadLength((uint8_t)receivedByte);
+            protocolState.commandBuffer.payloadReceived = 0;
 
-            if (protocol_state.command_buffer.expected_payload_length == 0) {
-                protocol_state.state = STK_STATE_WAITING_EOP;
+            if (protocolState.commandBuffer.expectedPayloadLength == 0) {
+                protocolState.state = STK_STATE_WAITING_EOP;
             } else {
-                protocol_state.state = STK_STATE_RECEIVING_PAYLOAD;
+                protocolState.state = STK_STATE_RECEIVING_PAYLOAD;
             }
             break;
 
         case STK_STATE_RECEIVING_PAYLOAD:
-            protocol_state.command_buffer.payload[protocol_state.command_buffer.payload_received++] = (uint8_t)received_byte;
+            protocolState.commandBuffer.payload[protocolState.commandBuffer.payloadReceived++] = (uint8_t)receivedByte;
 
-            if (protocol_state.command_buffer.command == CMD_PROG_PAGE &&
-                protocol_state.command_buffer.payload_received == 3) {
-                uint16_t page_size = (uint16_t)((protocol_state.command_buffer.payload[0] << 8) |
-                                                protocol_state.command_buffer.payload[1]);
-                protocol_state.command_buffer.expected_payload_length = 3 + page_size;
+            if (protocolState.commandBuffer.command == CMD_PROG_PAGE &&
+                protocolState.commandBuffer.payloadReceived == 3) {
+                uint16_t pageSize = (uint16_t)((protocolState.commandBuffer.payload[0] << 8) |
+                                                protocolState.commandBuffer.payload[1]);
+                protocolState.commandBuffer.expectedPayloadLength = 3 + pageSize;
             }
 
-            if (protocol_state.command_buffer.payload_received >= protocol_state.command_buffer.expected_payload_length) {
-                protocol_state.state = STK_STATE_WAITING_EOP;
+            if (protocolState.commandBuffer.payloadReceived >= protocolState.commandBuffer.expectedPayloadLength) {
+                protocolState.state = STK_STATE_WAITING_EOP;
             }
             break;
 
         case STK_STATE_WAITING_EOP:
-            if (received_byte == STK_EOP) {
-                protocol_state.state = STK_STATE_PROCESSING;
-                execute_command();
-                protocol_state.state = STK_STATE_WAITING_COMMAND;
-                memset(&protocol_state.command_buffer, 0, sizeof(protocol_state.command_buffer));
+            if (receivedByte == STK_EOP) {
+                protocolState.state = STK_STATE_PROCESSING;
+                executeCommand();
+                protocolState.state = STK_STATE_WAITING_COMMAND;
+                memset(&protocolState.commandBuffer, 0, sizeof(protocolState.commandBuffer));
             } else {
                 putchar(RESP_STK_NOSYNC);
-                protocol_state.state = STK_STATE_WAITING_COMMAND;
-                memset(&protocol_state.command_buffer, 0, sizeof(protocol_state.command_buffer));
+                protocolState.state = STK_STATE_WAITING_COMMAND;
+                memset(&protocolState.commandBuffer, 0, sizeof(protocolState.commandBuffer));
             }
             break;
 
