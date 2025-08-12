@@ -30,6 +30,7 @@ int main() {
     uint8_t x = 5;
     uint8_t y = 8;
     uint8_t f = add(x, y);
+    printf("%d\n", f);
 
     while (true) {
         sleep_ms(1000);
