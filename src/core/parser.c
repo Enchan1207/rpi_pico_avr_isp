@@ -153,12 +153,6 @@ ParserState processParserInput(parser_context_t* context, UartReadFunction readF
             context->arguments[index] = data;
             context->receivedArgumentsLength = index + 1;
 
-            // 全て受信したら終端待機へ
-            if (context->receivedArgumentsLength == context->expectedArgumentsLength) {
-                context->state = PARSER_EXPECTS_EOP;
-                break;
-            }
-
             // NOTE: 可変長引数コマンドの対応
 
             // UniversalMulti: 第一引数がデータ長
@@ -167,7 +161,7 @@ ParserState processParserInput(parser_context_t* context, UartReadFunction readF
                 uint16_t numberOfBytes = context->arguments[0] + 1;
 
                 // 最初にデータ長を受け取っている
-                context->expectedArgumentsLength = numberOfBytes + 1;
+                context->expectedArgumentsLength = numberOfBytes;
                 break;
             }
 
@@ -177,8 +171,14 @@ ParserState processParserInput(parser_context_t* context, UartReadFunction readF
                 uint8_t bytesLow = context->arguments[1];
                 uint16_t numberOfBytes = (bytesHigh << 8) | bytesLow;
 
-                // 最初にデータ長(high, low)を受け取っている
-                context->expectedArgumentsLength = numberOfBytes + 2;
+                // 最初にデータ長(high, low)と種別を受け取っている
+                context->expectedArgumentsLength = numberOfBytes + 3;
+                break;
+            }
+
+            // 全て受信したら終端待機へ
+            if (context->receivedArgumentsLength == context->expectedArgumentsLength) {
+                context->state = PARSER_EXPECTS_EOP;
                 break;
             }
 
