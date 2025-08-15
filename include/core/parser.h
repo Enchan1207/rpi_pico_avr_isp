@@ -78,10 +78,11 @@ typedef bool (*UartReadFunction)(uint8_t* data);
 /**
  * @brief パーサに入力を与えて処理する
  *
- * @param context
- * @param readFunc
+ * @param context コンテキスト
+ * @param readFunc 入力を返す関数
+ * @return ParserState 処理後のパーサ状態
  */
-void processParserInput(
+ParserState processParserInput(
     parser_context_t* context,
     UartReadFunction readFunc);
 

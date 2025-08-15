@@ -112,9 +112,13 @@ void initParserContext(parser_context_t* context) {
     memset(context->arguments, 0, sizeof(context->arguments));
 }
 
-void processParserInput(parser_context_t* context, UartReadFunction readFunc) {
-    if (context == NULL || readFunc == NULL) {
-        return;
+ParserState processParserInput(parser_context_t* context, UartReadFunction readFunc) {
+    if (context == NULL) {
+        return PARSER_READY;
+    }
+
+    if (readFunc == NULL) {
+        return context->state;
     }
 
     // データ受信
@@ -199,5 +203,10 @@ void processParserInput(parser_context_t* context, UartReadFunction readFunc) {
 
             context->state = PARSER_ACCEPTED;
             break;
+
+        default:
+            break;
     }
+
+    return context->state;
 }
