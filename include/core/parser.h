@@ -36,6 +36,9 @@ typedef struct {
     /// @brief 現在のパーサの状態
     ParserState state;
 
+    /// @brief コマンド
+    Stk500Command command;
+
     /// @brief 期待される引数の長さ
     uint8_t expectedArgumentsLength;
 
@@ -46,17 +49,19 @@ typedef struct {
     uint8_t arguments[259];
 } parser_context_t;
 
+/// @brief 与えられたコードが有効なコマンドかどうかを返す
+bool isValidCommand(uint8_t commandRaw);
+
 /**
  * @brief 与えられたコマンドの引数長を返す
  *
  * @param command STK500コマンド
- * @param length 引数長を格納するポインタ
- * @return bool コマンドが有効かどうか (未定義の場合falseが返ります)
+ * @return uint8_t 引数長 (不正なコマンドの場合は0)
  *
  * @note 引数内にデータ全体長の情報が含まれる可変長のコマンドについては、
  *       最低限必要な引数の長さを返します。
  */
-bool getCommandArgumentsLength(Stk500Command command, uint8_t* length);
+uint8_t getCommandArgumentsLength(Stk500Command command);
 
 /**
  * @brief パーサのコンテキストを初期化する
