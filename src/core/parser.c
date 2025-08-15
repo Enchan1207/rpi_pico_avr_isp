@@ -1,5 +1,10 @@
 #include "core/parser.h"
+
 #include <stddef.h>
+#include <string.h>
+
+/// @brief コマンド終端
+static const uint8_t STK500_EOP = 0x20;
 
 bool getCommandArgumentsLength(Stk500Command command, uint8_t* length) {
     if (length == NULL) {
@@ -68,5 +73,45 @@ bool getCommandArgumentsLength(Stk500Command command, uint8_t* length) {
 
         default:
             return false;
+    }
+}
+
+void initParserContext(parser_context_t* context) {
+    if (context == NULL) {
+        return;
+    }
+
+    context->state = PARSER_READY;
+    context->expectedArgumentsLength = 0;
+    context->receivedArgumentsLength = 0;
+}
+
+void processParserInput(parser_context_t* context, UartReadFunction readFunc) {
+    if (context == NULL || readFunc == NULL) {
+        return;
+    }
+
+    // データ受信
+    uint8_t data = 0;
+    bool readResult = readFunc(&data);
+
+    switch (context->state) {
+        case PARSER_READY:
+            break;
+
+        case PARSER_RECEIVE_ARGS:
+            break;
+
+        case PARSER_EXPECTS_EOP:
+            break;
+
+        case PARSER_ACCEPTED:
+            break;
+
+        case PARSER_UNKNOWN:
+            break;
+
+        case PARSER_ERROR:
+            break;
     }
 }

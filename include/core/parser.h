@@ -10,6 +10,42 @@
 extern "C" {
 #endif
 
+/// @brief コマンドパーサの状態
+typedef enum {
+    /// @brief 準備完了, 受信待機中
+    PARSER_READY = 0,
+
+    /// @brief 引数受信中
+    PARSER_RECEIVE_ARGS,
+
+    /// @brief 終端待機
+    PARSER_EXPECTS_EOP,
+
+    /// @brief 受理
+    PARSER_ACCEPTED,
+
+    /// @brief 不明なコマンド
+    PARSER_UNKNOWN,
+
+    /// @brief その他のパースエラー
+    PARSER_ERROR
+} ParserState;
+
+/// @brief パーサのコンテキスト
+typedef struct {
+    /// @brief 現在のパーサの状態
+    ParserState state;
+
+    /// @brief 期待される引数の長さ
+    uint8_t expectedArgumentsLength;
+
+    /// @brief 受信した引数の長さ
+    uint8_t receivedArgumentsLength;
+
+    /// @brief 引数バッファ
+    uint8_t arguments[259];
+} parser_context_t;
+
 /**
  * @brief 与えられたコマンドの引数長を返す
  *
@@ -21,6 +57,28 @@ extern "C" {
  *       最低限必要な引数の長さを返します。
  */
 bool getCommandArgumentsLength(Stk500Command command, uint8_t* length);
+
+/**
+ * @brief パーサのコンテキストを初期化する
+ *
+ * @param context
+ */
+void initParserContext(parser_context_t* context);
+
+/**
+ * @brief UARTからデータを読み取る関数
+ */
+typedef bool (*UartReadFunction)(uint8_t* data);
+
+/**
+ * @brief パーサに入力を与えて処理する
+ *
+ * @param context
+ * @param readFunc
+ */
+void processParserInput(
+    parser_context_t* context,
+    UartReadFunction readFunc);
 
 #ifdef __cplusplus
 }
