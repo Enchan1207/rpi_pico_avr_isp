@@ -40,10 +40,10 @@ typedef struct {
     Stk500Command command;
 
     /// @brief 期待される引数の長さ
-    uint8_t expectedArgumentsLength;
+    uint16_t expectedArgumentsLength;
 
     /// @brief 受信した引数の長さ
-    uint8_t receivedArgumentsLength;
+    uint16_t receivedArgumentsLength;
 
     /// @brief 引数バッファ
     uint8_t arguments[259];

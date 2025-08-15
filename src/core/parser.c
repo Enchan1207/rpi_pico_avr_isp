@@ -140,7 +140,45 @@ void processParserInput(parser_context_t* context, UartReadFunction readFunc) {
             break;
 
         case PARSER_RECEIVE_ARGS:
-            // under construction
+            if (!isDataReceived) {
+                context->state = PARSER_ERROR;
+                break;
+            }
+
+            // 格納してインデックスを進める
+            uint16_t index = context->receivedArgumentsLength;
+            context->arguments[index] = data;
+            context->receivedArgumentsLength = index + 1;
+
+            // 全て受信したら終端待機へ
+            if (context->receivedArgumentsLength == context->expectedArgumentsLength) {
+                context->state = PARSER_EXPECTS_EOP;
+                break;
+            }
+
+            // NOTE: 可変長引数コマンドの対応
+
+            // UniversalMulti: 第一引数がデータ長
+            if (index == 0 && context->command == STK500_CMD_UNIVERSAL_MULTI) {
+                // AVR061より: number_of_bytes: 0-255 equals 1-256 bytes to be sent
+                uint16_t numberOfBytes = context->arguments[0] + 1;
+
+                // 最初にデータ長を受け取っている
+                context->expectedArgumentsLength = numberOfBytes + 1;
+                break;
+            }
+
+            // ProgPage: 第一,第二引数がデータ長
+            if (index == 1 && context->command == STK500_CMD_PROG_PAGE) {
+                uint8_t bytesHigh = context->arguments[0];
+                uint8_t bytesLow = context->arguments[1];
+                uint16_t numberOfBytes = (bytesHigh << 8) | bytesLow;
+
+                // 最初にデータ長(high, low)を受け取っている
+                context->expectedArgumentsLength = numberOfBytes + 2;
+                break;
+            }
+
             break;
 
         case PARSER_EXPECTS_EOP:
