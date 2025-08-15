@@ -199,3 +199,127 @@ TEST(ParserTest, ParsePayloadForUniversalMulti) {
 
     mockIndex = 0;
 }
+
+TEST(ParserTest, ParseUnknownCommand) {
+    parser_context_t context;
+    initParserContext(&context);
+
+    // ペイロードを返すモック
+    static uint8_t mockData[] = {0xFF, STK500_EOP};
+    static size_t mockIndex = 0;
+
+    auto mockReadFunc = [](uint8_t* data) -> bool {
+        if (mockIndex >= sizeof(mockData)) {
+            return false;
+        }
+
+        *data = mockData[mockIndex++];
+        return true;
+    };
+
+    EXPECT_EQ(context.state, PARSER_READY);
+
+    /// 1回目: コマンド受信、終端待ちに遷移
+    EXPECT_EQ(processParserInput(&context, mockReadFunc), PARSER_EXPECTS_EOP);
+    EXPECT_EQ(context.command, 0xFF);
+
+    /// 2回目: エラー
+    EXPECT_EQ(processParserInput(&context, mockReadFunc), PARSER_UNKNOWN);
+
+    mockIndex = 0;
+}
+
+TEST(ParserTest, TerminateWhileParse) {
+    parser_context_t context;
+    initParserContext(&context);
+
+    // ペイロードを返すモック
+    static uint8_t mockData[] = {0xFF};
+    static size_t mockIndex = 0;
+
+    auto mockReadFunc = [](uint8_t* data) -> bool {
+        if (mockIndex >= sizeof(mockData)) {
+            return false;
+        }
+
+        *data = mockData[mockIndex++];
+        return true;
+    };
+
+    EXPECT_EQ(context.state, PARSER_READY);
+
+    /// 1回目: コマンド受信、終端待ちに遷移
+    EXPECT_EQ(processParserInput(&context, mockReadFunc), PARSER_EXPECTS_EOP);
+    EXPECT_EQ(context.command, 0xFF);
+
+    /// 2回目: エラー
+    EXPECT_EQ(processParserInput(&context, mockReadFunc), PARSER_ERROR);
+
+    mockIndex = 0;
+}
+
+TEST(ParserTest, TerminateWhileParseWithArgs) {
+    parser_context_t context;
+    initParserContext(&context);
+
+    // ペイロードを返すモック
+    static uint8_t mockData[] = {STK500_CMD_UNIVERSAL, 0x01, 0x23, 0x45};
+    static size_t mockIndex = 0;
+
+    auto mockReadFunc = [](uint8_t* data) -> bool {
+        if (mockIndex >= sizeof(mockData)) {
+            return false;
+        }
+
+        *data = mockData[mockIndex++];
+        return true;
+    };
+
+    EXPECT_EQ(context.state, PARSER_READY);
+
+    /// 1回目: コマンド受信、終端待ちに遷移
+    EXPECT_EQ(processParserInput(&context, mockReadFunc), PARSER_RECEIVE_ARGS);
+    EXPECT_EQ(context.command, STK500_CMD_UNIVERSAL);
+
+    /// 2~4回目: 状態維持
+    EXPECT_EQ(processParserInput(&context, mockReadFunc), PARSER_RECEIVE_ARGS);
+    EXPECT_EQ(processParserInput(&context, mockReadFunc), PARSER_RECEIVE_ARGS);
+    EXPECT_EQ(processParserInput(&context, mockReadFunc), PARSER_RECEIVE_ARGS);
+
+    /// 5回目でEOPを受け取れなかった
+    EXPECT_EQ(processParserInput(&context, mockReadFunc), PARSER_ERROR);
+
+    mockIndex = 0;
+}
+
+TEST(ParserTest, TerminateWhileParseProgPage) {
+    parser_context_t context;
+    initParserContext(&context);
+
+    // ペイロードを返すモック
+    static uint8_t mockData[] = {STK500_CMD_PROG_PAGE, 0x00};
+    static size_t mockIndex = 0;
+
+    auto mockReadFunc = [](uint8_t* data) -> bool {
+        if (mockIndex >= sizeof(mockData)) {
+            return false;
+        }
+
+        *data = mockData[mockIndex++];
+        return true;
+    };
+
+    EXPECT_EQ(context.state, PARSER_READY);
+
+    /// 1回目: コマンド受信、終端待ちに遷移
+    EXPECT_EQ(processParserInput(&context, mockReadFunc), PARSER_RECEIVE_ARGS);
+    EXPECT_EQ(context.command, STK500_CMD_PROG_PAGE);
+
+    /// 2回目: 状態維持
+    EXPECT_EQ(processParserInput(&context, mockReadFunc), PARSER_RECEIVE_ARGS);
+
+    /// 引数の受信中にエラー
+    EXPECT_EQ(processParserInput(&context, mockReadFunc), PARSER_ERROR);
+
+    mockIndex = 0;
+}
