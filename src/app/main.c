@@ -2,8 +2,6 @@
 #include <pico/stdlib.h>
 #include <stdio.h>
 
-#include "core/calc.h"
-
 // connected to RESET# of target MCU
 const unsigned int CS_PIN = 17;
 const unsigned int SCK_PIN = 18;
@@ -26,11 +24,6 @@ int main() {
     gpio_set_function(SCK_PIN, GPIO_FUNC_SPI);
     gpio_set_function(MOSI_PIN, GPIO_FUNC_SPI);
     gpio_set_function(MISO_PIN, GPIO_FUNC_SPI);
-
-    uint8_t x = 5;
-    uint8_t y = 8;
-    uint8_t f = add(x, y);
-    printf("%d\n", f);
 
     while (true) {
         sleep_ms(1000);

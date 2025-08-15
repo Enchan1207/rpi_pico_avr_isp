@@ -11,7 +11,6 @@ include(GoogleTest)
 
 add_executable(core_test)
 target_sources(core_test PRIVATE
-    test_calc.cpp
     test_parser.cpp
 )
 target_link_libraries(core_test PRIVATE
