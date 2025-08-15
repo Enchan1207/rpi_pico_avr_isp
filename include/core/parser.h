@@ -86,6 +86,9 @@ ParserState processParserInput(
     parser_context_t* context,
     UartReadFunction readFunc);
 
+/// @brief コマンド終端
+extern const uint8_t STK500_EOP;
+
 #ifdef __cplusplus
 }
 #endif

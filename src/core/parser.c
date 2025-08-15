@@ -3,8 +3,7 @@
 #include <stddef.h>
 #include <string.h>
 
-/// @brief コマンド終端
-static const uint8_t STK500_EOP = 0x20;
+const uint8_t STK500_EOP = 0x20;
 
 bool isValidCommand(uint8_t commandRaw) {
     switch ((Stk500Command)commandRaw) {
