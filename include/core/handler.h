@@ -11,21 +11,30 @@ extern "C" {
 #endif
 
 /**
- * @brief データ転送関数
+ * @brief ISP書込み関数
  */
-typedef uint8_t (*DataTransferFunction)(
+typedef uint8_t (*IspTransferFunction)(
     uint8_t cmd1,
     uint8_t cmd2,
     uint8_t cmd3,
     uint8_t cmd4);
 
 /**
+ * @brief レスポンス書き込み関数
+ */
+typedef void (*ResponseWriterFunction)(const uint8_t* response, uint16_t length);
+
+/**
  * @brief パーサコンテキストを渡してコマンドを処理する
  *
  * @param context コンテキスト
- * @param transferFunc データ転送関数
+ * @param transferFunc ISP書込み関数
+ * @param responseWriterFunc レスポンス書き込み関数
  */
-void handleCommand(parser_context_t* context, DataTransferFunction transferFunc);
+void handleCommand(
+    parser_context_t* context,
+    IspTransferFunction transferFunc,
+    ResponseWriterFunction responseWriterFunc);
 
 #ifdef __cplusplus
 }
