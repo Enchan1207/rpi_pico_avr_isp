@@ -22,7 +22,10 @@ void handleLeaveProgMode(const parser_context_t* parserCtx, handler_context_t* h
 }
 
 void handleChipErase(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
+    handlerCtx->transferFunc(0xAC, 0x80, 0x00, 0x00);
+    
+    const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
+    handlerCtx->writeResponse(response, sizeof(response));
 }
 
 void handleCheckAutoInc(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {

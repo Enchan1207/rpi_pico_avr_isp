@@ -80,4 +80,16 @@ TEST_F(ProgramHandlerTest, HandleLeaveProgModeCommand) {
     EXPECT_TRUE(mockResetState);
 }
 
+TEST_F(ProgramHandlerTest, HandleChipEraseCommand) {
+    parserCtx.command = STK500_CMD_CHIP_ERASE;
+    parserCtx.expectedArgumentsLength = 0;
+    parserCtx.receivedArgumentsLength = 0;
+
+    handleCommand(&parserCtx, &handlerCtx);
+
+    std::vector<uint8_t> expectedResponse = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
+    ASSERT_EQ(capturedResponse.size(), expectedResponse.size());
+    EXPECT_EQ(capturedResponse, expectedResponse);
+}
+
 }  // namespace
