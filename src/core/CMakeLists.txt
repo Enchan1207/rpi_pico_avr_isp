@@ -12,4 +12,5 @@ target_sources(core PRIVATE
     handler/flash.c
     handler/eeprom.c
     handler/fuse.c
+    handler/page_access.c
 )
