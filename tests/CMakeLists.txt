@@ -19,6 +19,7 @@ target_sources(core_test PRIVATE
     handler/test_program.cpp
     handler/test_fuse.cpp
     handler/test_device.cpp
+    handler/test_eeprom.cpp
 )
 target_link_libraries(core_test PRIVATE
     GTest::gtest_main
