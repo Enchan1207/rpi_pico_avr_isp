@@ -15,10 +15,11 @@ void handleError(const parser_context_t* parserCtx, handler_context_t* handlerCt
     handlerCtx->writeResponse(response, sizeof(response));
 }
 
-void initHandlerContext(handler_context_t* context, IspTransferFunction transferFunc, ResponseWriterFunction responseWriterFunc, ResetControlFunction resetControlFunc) {
+void initHandlerContext(handler_context_t* context, IspTransferFunction transferFunc, ResponseWriterFunction responseWriterFunc, ResetControlFunction resetControlFunc, SleepFunction sleepFunc) {
     context->transferFunc = transferFunc;
     context->writeResponse = responseWriterFunc;
     context->resetControl = resetControlFunc;
+    context->sleepFunc = sleepFunc;
     context->currentAddress = 0;
 }
 

@@ -31,6 +31,11 @@ typedef void (*ResponseWriterFunction)(const uint8_t* response, size_t length);
 typedef void (*ResetControlFunction)(bool state);
 
 /**
+ * @brief スリープ関数
+ */
+typedef void (*SleepFunction)(uint32_t milliseconds);
+
+/**
  * @brief デバイス情報
  */
 typedef struct {
@@ -72,6 +77,9 @@ typedef struct {
     /// @brief RESET制御関数
     ResetControlFunction resetControl;
 
+    /// @brief スリープ関数 (メモリ書き換え時の待機を想定)
+    SleepFunction sleepFunc;
+
     /// @brief 現在のアドレス
     uint16_t currentAddress;
 
@@ -86,12 +94,14 @@ typedef struct {
  * @param transferFunc ISP書込み関数
  * @param responseWriterFunc レスポンス書き込み関数
  * @param resetControlFunc RESET制御関数
+ * @param sleepFunc スリープ関数
  */
 void initHandlerContext(
     handler_context_t* context,
     IspTransferFunction transferFunc,
     ResponseWriterFunction responseWriterFunc,
-    ResetControlFunction resetControlFunc);
+    ResetControlFunction resetControlFunc,
+    SleepFunction sleepFunc);
 
 /**
  * @brief パーサコンテキストとハンドラコンテキストを渡してコマンドを処理する

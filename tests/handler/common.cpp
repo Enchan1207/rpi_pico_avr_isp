@@ -19,9 +19,13 @@ void mockResetControl(bool state) {
     mockResetState = state;
 }
 
+void mockSleep(uint32_t milliseconds) {
+    // テスト環境では実際の待機は不要
+}
+
 void HandlerTestBase::SetUp() {
     initParserContext(&parserCtx);
-    initHandlerContext(&handlerCtx, mockIspTransfer, mockResponseWriter, mockResetControl);
+    initHandlerContext(&handlerCtx, mockIspTransfer, mockResponseWriter, mockResetControl, mockSleep);
     capturedResponse.clear();
     mockIspTransferReturnValue = 0x00;
     mockResetState = false;
