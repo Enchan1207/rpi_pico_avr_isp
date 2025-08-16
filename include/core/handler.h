@@ -31,6 +31,35 @@ typedef void (*ResponseWriterFunction)(const uint8_t* response, size_t length);
 typedef void (*ResetControlFunction)(bool state);
 
 /**
+ * @brief デバイス情報
+ */
+typedef struct {
+    /// @brief デバイスコード
+    uint8_t deviceCode;
+
+    /// @brief ロックバイト長
+    uint8_t lockBytesLength;
+
+    /// @brief ヒューズバイト長
+    uint8_t fuseBytesLength;
+
+    /// @brief フラッシュページサイズ
+    uint16_t pageSize;
+
+    /// @brief EEPROMサイズ
+    uint16_t eepromSize;
+
+    /// @brief フラッシュサイズ
+    uint32_t flashSize;
+
+    /// @brief コマンドサイズ
+    uint8_t commandSize;
+
+    /// @brief EEPROMページサイズ
+    uint8_t eepromPageSize;
+} device_info_t;
+
+/**
  * @brief ハンドラコンテキスト
  */
 typedef struct {
@@ -45,6 +74,9 @@ typedef struct {
 
     /// @brief 現在のアドレス
     uint16_t currentAddress;
+
+    /// @brief デバイス情報
+    device_info_t deviceInfo;
 } handler_context_t;
 
 /**

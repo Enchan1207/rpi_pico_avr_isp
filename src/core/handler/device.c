@@ -84,11 +84,30 @@ void handleGetParameter(const parser_context_t* parserCtx, handler_context_t* ha
 }
 
 void handleSetDevice(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
+    const uint8_t* args = parserCtx->arguments;
+    
+    handlerCtx->deviceInfo.deviceCode = args[0];
+    handlerCtx->deviceInfo.lockBytesLength = args[6];
+    handlerCtx->deviceInfo.fuseBytesLength = args[7];
+    handlerCtx->deviceInfo.pageSize = (args[12] << 8) | args[13];
+    handlerCtx->deviceInfo.eepromSize = (args[14] << 8) | args[15];
+    handlerCtx->deviceInfo.flashSize = ((uint32_t)args[16] << 24) | 
+                                       ((uint32_t)args[17] << 16) |
+                                       ((uint32_t)args[18] << 8) |
+                                       args[19];
+
+    const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
+    handlerCtx->writeResponse(response, sizeof(response));
 }
 
 void handleSetDeviceExt(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
+    const uint8_t* args = parserCtx->arguments;
+    
+    handlerCtx->deviceInfo.commandSize = args[0];
+    handlerCtx->deviceInfo.eepromPageSize = args[1];
+
+    const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
+    handlerCtx->writeResponse(response, sizeof(response));
 }
 
 void handleReadSign(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
