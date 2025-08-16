@@ -1,6 +1,8 @@
 #include "handler_private.h"
 
 void handleEnterProgMode(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+    handlerCtx->resetControl(false);
+    
     uint8_t result = handlerCtx->transferFunc(0xAC, 0x53, 0x00, 0x00);
     
     if (result == 0x53) {
@@ -13,7 +15,10 @@ void handleEnterProgMode(const parser_context_t* parserCtx, handler_context_t* h
 }
 
 void handleLeaveProgMode(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
+    handlerCtx->resetControl(true);
+    
+    const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
+    handlerCtx->writeResponse(response, sizeof(response));
 }
 
 void handleChipErase(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
