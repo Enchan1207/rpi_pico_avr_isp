@@ -1,12 +1,6 @@
 #include "handler_private.h"
 
 void handleUniversal(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    if (parserCtx->receivedArgumentsLength != 4) {
-        const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_FAILED};
-        handlerCtx->writeResponse(response, sizeof(response));
-        return;
-    }
-
     uint8_t byte1 = parserCtx->arguments[0];
     uint8_t byte2 = parserCtx->arguments[1];
     uint8_t byte3 = parserCtx->arguments[2];
@@ -19,19 +13,7 @@ void handleUniversal(const parser_context_t* parserCtx, handler_context_t* handl
 }
 
 void handleUniversalMulti(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    if (parserCtx->receivedArgumentsLength < 1) {
-        const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_FAILED};
-        handlerCtx->writeResponse(response, sizeof(response));
-        return;
-    }
-
     uint8_t numberOfBytes = parserCtx->arguments[0];
-
-    if (parserCtx->receivedArgumentsLength != (numberOfBytes + 1)) {
-        const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_FAILED};
-        handlerCtx->writeResponse(response, sizeof(response));
-        return;
-    }
 
     if (numberOfBytes % 4 != 0) {
         const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_FAILED};

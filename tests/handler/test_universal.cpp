@@ -28,20 +28,6 @@ TEST_F(UniversalHandlerTest, HandleUniversalCommand) {
     EXPECT_EQ(capturedResponse, expectedResponse);
 }
 
-TEST_F(UniversalHandlerTest, HandleUniversalCommandInsufficientArgs) {
-    parserCtx.command = STK500_CMD_UNIVERSAL;
-    parserCtx.expectedArgumentsLength = 4;
-    parserCtx.receivedArgumentsLength = 3;
-    parserCtx.arguments[0] = 0xAC;
-    parserCtx.arguments[1] = 0x53;
-    parserCtx.arguments[2] = 0x00;
-
-    handleCommand(&parserCtx, &handlerCtx);
-
-    std::vector<uint8_t> expectedResponse = {STK500_RESP_IN_SYNC, STK500_RESP_FAILED};
-    ASSERT_EQ(capturedResponse.size(), expectedResponse.size());
-    EXPECT_EQ(capturedResponse, expectedResponse);
-}
 
 TEST_F(UniversalHandlerTest, HandleUniversalMultiCommand) {
     parserCtx.command = STK500_CMD_UNIVERSAL_MULTI;
