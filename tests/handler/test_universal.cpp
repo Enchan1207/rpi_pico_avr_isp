@@ -1,4 +1,4 @@
-#include "handler_test_common.h"
+#include "common.h"
 
 using namespace handler_test;
 
