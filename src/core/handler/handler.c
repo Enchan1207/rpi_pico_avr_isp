@@ -3,7 +3,7 @@
 #include "handler_private.h"
 #include "core/stk500.h"
 
-void handleError(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+void handleError(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     if (parserCtx->state == PARSER_UNKNOWN) {
         const uint8_t response[] = {STK500_RESP_UNKNOWN};
         handlerCtx->writeResponse(response, sizeof(response));
@@ -20,7 +20,7 @@ void initHandlerContext(handler_context_t* context, IspTransferFunction transfer
     context->writeResponse = responseWriterFunc;
 }
 
-void handleCommand(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+void handleCommand(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     if (parserCtx->state != PARSER_ACCEPTED) {
         handleError(parserCtx, handlerCtx);
         return;

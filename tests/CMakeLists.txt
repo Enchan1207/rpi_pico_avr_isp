@@ -12,7 +12,7 @@ include(GoogleTest)
 add_executable(core_test)
 target_sources(core_test PRIVATE
     test_parser.cpp
-    test_handler.cpp
+    handler/test_handler.cpp
     handler/handler_test_common.cpp
     handler/test_sync.cpp
     handler/test_universal.cpp

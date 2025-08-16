@@ -55,7 +55,7 @@ void initHandlerContext(
  * @param handlerCtx ハンドラコンテキスト
  */
 void handleCommand(
-    parser_context_t* parserCtx,
+    const parser_context_t* parserCtx,
     handler_context_t* handlerCtx);
 
 #ifdef __cplusplus

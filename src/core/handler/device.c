@@ -1,29 +1,29 @@
 #include "handler_private.h"
 
-void handleSetParameter(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+void handleSetParameter(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-void handleGetParameter(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+void handleGetParameter(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-void handleSetDevice(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+void handleSetDevice(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-void handleSetDeviceExt(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+void handleSetDeviceExt(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-void handleReadSign(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+void handleReadSign(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-void handleReadOscCal(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+void handleReadOscCal(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-void handleReadOscCalExt(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+void handleReadOscCalExt(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
