@@ -11,6 +11,7 @@
 
 namespace handler_test {
 
+extern uint8_t mockIspTransferReturnValue;
 uint8_t mockIspTransfer(uint8_t cmd1, uint8_t cmd2, uint8_t cmd3, uint8_t cmd4);
 
 extern std::vector<uint8_t> capturedResponse;

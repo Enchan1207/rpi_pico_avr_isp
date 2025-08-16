@@ -2,8 +2,10 @@
 
 namespace handler_test {
 
+uint8_t mockIspTransferReturnValue = 0x00;
+
 uint8_t mockIspTransfer(uint8_t cmd1, uint8_t cmd2, uint8_t cmd3, uint8_t cmd4) {
-    return 0x00;
+    return mockIspTransferReturnValue;
 }
 
 std::vector<uint8_t> capturedResponse;
@@ -16,6 +18,7 @@ void HandlerTestBase::SetUp() {
     initParserContext(&parserCtx);
     initHandlerContext(&handlerCtx, mockIspTransfer, mockResponseWriter);
     capturedResponse.clear();
+    mockIspTransferReturnValue = 0x00;
 }
 
 }  // namespace handler_test
