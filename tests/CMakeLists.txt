@@ -12,6 +12,7 @@ include(GoogleTest)
 add_executable(core_test)
 target_sources(core_test PRIVATE
     test_parser.cpp
+    test_handler.cpp
 )
 target_link_libraries(core_test PRIVATE
     GTest::gtest_main
