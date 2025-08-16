@@ -86,6 +86,7 @@ STK500v1は、PCと書込み器との通信を行うためのプロトコルで�
 ### SetParameter (0x40)
 
 書込み器内のパラメータを設定する。
+(パラメータについては [parameters.md](./parameters.md)を参照のこと)
 
 - 引数:
   - `parameter`: パラメータ番号
@@ -102,6 +103,7 @@ STK500v1は、PCと書込み器との通信を行うためのプロトコルで�
 ### GetParameter (0x41)
 
 書込み器内のパラメータの値を取得する。
+(パラメータについては [parameters.md](./parameters.md)を参照のこと)
 
 - 引数:
   - `parameter`: パラメータ番号
