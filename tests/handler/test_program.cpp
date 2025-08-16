@@ -50,6 +50,7 @@ TEST_F(ProgramHandlerTest, HandleEnterProgModeCommandSuccess) {
     std::vector<uint8_t> expectedResponse = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
     ASSERT_EQ(capturedResponse.size(), expectedResponse.size());
     EXPECT_EQ(capturedResponse, expectedResponse);
+    EXPECT_FALSE(mockResetState);
 }
 
 TEST_F(ProgramHandlerTest, HandleEnterProgModeCommandFailure) {
@@ -63,6 +64,20 @@ TEST_F(ProgramHandlerTest, HandleEnterProgModeCommandFailure) {
     std::vector<uint8_t> expectedResponse = {STK500_RESP_IN_SYNC, STK500_RESP_NO_DEVICE};
     ASSERT_EQ(capturedResponse.size(), expectedResponse.size());
     EXPECT_EQ(capturedResponse, expectedResponse);
+    EXPECT_FALSE(mockResetState);
+}
+
+TEST_F(ProgramHandlerTest, HandleLeaveProgModeCommand) {
+    parserCtx.command = STK500_CMD_LEAVE_PROG_MODE;
+    parserCtx.expectedArgumentsLength = 0;
+    parserCtx.receivedArgumentsLength = 0;
+
+    handleCommand(&parserCtx, &handlerCtx);
+
+    std::vector<uint8_t> expectedResponse = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
+    ASSERT_EQ(capturedResponse.size(), expectedResponse.size());
+    EXPECT_EQ(capturedResponse, expectedResponse);
+    EXPECT_TRUE(mockResetState);
 }
 
 }  // namespace

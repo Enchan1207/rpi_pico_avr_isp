@@ -14,11 +14,17 @@ void mockResponseWriter(const uint8_t* response, size_t length) {
     capturedResponse.assign(response, response + length);
 }
 
+bool mockResetState = false;
+void mockResetControl(bool state) {
+    mockResetState = state;
+}
+
 void HandlerTestBase::SetUp() {
     initParserContext(&parserCtx);
-    initHandlerContext(&handlerCtx, mockIspTransfer, mockResponseWriter);
+    initHandlerContext(&handlerCtx, mockIspTransfer, mockResponseWriter, mockResetControl);
     capturedResponse.clear();
     mockIspTransferReturnValue = 0x00;
+    mockResetState = false;
 }
 
 }  // namespace handler_test

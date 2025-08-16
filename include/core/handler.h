@@ -26,6 +26,11 @@ typedef uint8_t (*IspTransferFunction)(
 typedef void (*ResponseWriterFunction)(const uint8_t* response, size_t length);
 
 /**
+ * @brief RESET制御関数
+ */
+typedef void (*ResetControlFunction)(bool state);
+
+/**
  * @brief ハンドラコンテキスト
  */
 typedef struct {
@@ -34,6 +39,9 @@ typedef struct {
 
     /// @brief レスポンス書き込み関数
     ResponseWriterFunction writeResponse;
+
+    /// @brief RESET制御関数
+    ResetControlFunction resetControl;
 
     /// @brief 現在のアドレス
     uint16_t currentAddress;
@@ -45,11 +53,13 @@ typedef struct {
  * @param context ハンドラコンテキスト
  * @param transferFunc ISP書込み関数
  * @param responseWriterFunc レスポンス書き込み関数
+ * @param resetControlFunc RESET制御関数
  */
 void initHandlerContext(
     handler_context_t* context,
     IspTransferFunction transferFunc,
-    ResponseWriterFunction responseWriterFunc);
+    ResponseWriterFunction responseWriterFunc,
+    ResetControlFunction resetControlFunc);
 
 /**
  * @brief パーサコンテキストとハンドラコンテキストを渡してコマンドを処理する

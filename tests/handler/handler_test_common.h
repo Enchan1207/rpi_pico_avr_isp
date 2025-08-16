@@ -17,6 +17,9 @@ uint8_t mockIspTransfer(uint8_t cmd1, uint8_t cmd2, uint8_t cmd3, uint8_t cmd4);
 extern std::vector<uint8_t> capturedResponse;
 void mockResponseWriter(const uint8_t* response, size_t length);
 
+extern bool mockResetState;
+void mockResetControl(bool state);
+
 class HandlerTestBase : public ::testing::Test {
 protected:
     void SetUp() override;
