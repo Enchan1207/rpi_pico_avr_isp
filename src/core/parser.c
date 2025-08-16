@@ -111,7 +111,7 @@ void initParserContext(parser_context_t* context) {
     memset(context->arguments, 0, sizeof(context->arguments));
 }
 
-ParserState processParserInput(parser_context_t* context, UartReadFunction readFunc) {
+ParserState processParserInput(parser_context_t* context, DataReaderFunction readFunc) {
     if (context == NULL) {
         return PARSER_READY;
     }

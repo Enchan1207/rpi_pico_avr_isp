@@ -71,9 +71,9 @@ uint8_t getCommandArgumentsLength(Stk500Command command);
 void initParserContext(parser_context_t* context);
 
 /**
- * @brief UARTからデータを読み取る関数
+ * @brief データ読み込み関数
  */
-typedef bool (*UartReadFunction)(uint8_t* data);
+typedef bool (*DataReaderFunction)(uint8_t* data);
 
 /**
  * @brief パーサに入力を与えて処理する
@@ -84,7 +84,7 @@ typedef bool (*UartReadFunction)(uint8_t* data);
  */
 ParserState processParserInput(
     parser_context_t* context,
-    UartReadFunction readFunc);
+    DataReaderFunction readFunc);
 
 /// @brief コマンド終端
 extern const uint8_t STK500_EOP;
