@@ -35,7 +35,7 @@ void handleCheckAutoInc(const parser_context_t* parserCtx, handler_context_t* ha
 }
 
 void handleLoadAddress(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    uint16_t address = (parserCtx->arguments[0] << 8) | parserCtx->arguments[1];
+    uint16_t address = parserCtx->arguments[0] | (parserCtx->arguments[1] << 8);
     handlerCtx->currentAddress = address;
 
     const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};

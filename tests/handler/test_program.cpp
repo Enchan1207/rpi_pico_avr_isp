@@ -16,8 +16,8 @@ TEST_F(ProgramHandlerTest, HandleLoadAddressCommand) {
     parserCtx.command = STK500_CMD_LOAD_ADDRESS;
     parserCtx.expectedArgumentsLength = 2;
     parserCtx.receivedArgumentsLength = 2;
-    parserCtx.arguments[0] = 0x12;  // 上位バイト
-    parserCtx.arguments[1] = 0x34;  // 下位バイト
+    parserCtx.arguments[0] = 0x34;  // 下位バイト
+    parserCtx.arguments[1] = 0x12;  // 上位バイト
 
     handleCommand(&parserCtx, &handlerCtx);
 
