@@ -18,6 +18,7 @@ void handleError(const parser_context_t* parserCtx, handler_context_t* handlerCt
 void initHandlerContext(handler_context_t* context, IspTransferFunction transferFunc, ResponseWriterFunction responseWriterFunc) {
     context->transferFunc = transferFunc;
     context->writeResponse = responseWriterFunc;
+    context->currentAddress = 0;
 }
 
 void handleCommand(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {

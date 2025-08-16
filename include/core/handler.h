@@ -34,6 +34,9 @@ typedef struct {
 
     /// @brief レスポンス書き込み関数
     ResponseWriterFunction writeResponse;
+
+    /// @brief 現在のアドレス
+    uint16_t currentAddress;
 } handler_context_t;
 
 /**
