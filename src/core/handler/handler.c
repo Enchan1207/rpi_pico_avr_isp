@@ -1,121 +1,7 @@
 #include "core/handler.h"
 
-#include <stddef.h>
-
+#include "../handler_private.h"
 #include "core/stk500.h"
-#include "handler_private.h"
-
-void handleGetSync(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleGetSignOn(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleSetParameter(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleGetParameter(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleSetDevice(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleSetDeviceExt(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleEnterProgMode(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleLeaveProgMode(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleChipErase(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleCheckAutoInc(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleLoadAddress(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleUniversal(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleUniversalMulti(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleProgFlash(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleProgData(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleProgFuse(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleProgLock(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleProgPage(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleProgFuseExt(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleReadFlash(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleReadData(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleReadFuse(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleReadLock(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleReadPage(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleReadSign(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleReadOscCal(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleReadFuseExt(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
-
-void handleReadOscCalExt(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
-}
 
 void handleError(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     if (parserCtx->state == PARSER_UNKNOWN) {
@@ -254,7 +140,7 @@ void handleCommand(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
             break;
 
         default:
-            // 何もしない (パーサコンテキストがacceptedなら、ここには落ちないはず)
+            handleError(parserCtx, handlerCtx);
             break;
     }
 }

@@ -2,6 +2,7 @@
 #define HANDLER_H
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #include "parser.h"
