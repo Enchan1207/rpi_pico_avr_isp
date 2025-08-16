@@ -1,7 +1,15 @@
 #include "handler_private.h"
 
 void handleEnterProgMode(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
-    // TODO: 実装
+    uint8_t result = handlerCtx->transferFunc(0xAC, 0x53, 0x00, 0x00);
+    
+    if (result == 0x53) {
+        const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
+        handlerCtx->writeResponse(response, sizeof(response));
+    } else {
+        const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_NO_DEVICE};
+        handlerCtx->writeResponse(response, sizeof(response));
+    }
 }
 
 void handleLeaveProgMode(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
