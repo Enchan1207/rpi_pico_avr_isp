@@ -15,6 +15,7 @@ target_sources(core_test PRIVATE
     test_handler.cpp
     handler/handler_test_common.cpp
     handler/test_sync.cpp
+    handler/test_universal.cpp
 )
 target_link_libraries(core_test PRIVATE
     GTest::gtest_main

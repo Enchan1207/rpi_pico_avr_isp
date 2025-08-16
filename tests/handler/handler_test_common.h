@@ -11,14 +11,11 @@
 
 namespace handler_test {
 
-// テスト用のISP転送関数（モック）
 uint8_t mockIspTransfer(uint8_t cmd1, uint8_t cmd2, uint8_t cmd3, uint8_t cmd4);
 
-// テスト用のレスポンス書き込み関数（モック）
 extern std::vector<uint8_t> capturedResponse;
 void mockResponseWriter(const uint8_t* response, size_t length);
 
-// ハンドラテスト用の基底クラス
 class HandlerTestBase : public ::testing::Test {
 protected:
     void SetUp() override;
