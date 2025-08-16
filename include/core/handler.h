@@ -22,19 +22,40 @@ typedef uint8_t (*IspTransferFunction)(
 /**
  * @brief レスポンス書き込み関数
  */
-typedef void (*ResponseWriterFunction)(const uint8_t* response, uint16_t length);
+typedef void (*ResponseWriterFunction)(const uint8_t* response, size_t length);
 
 /**
- * @brief パーサコンテキストを渡してコマンドを処理する
+ * @brief ハンドラコンテキスト
+ */
+typedef struct {
+    /// @brief ISP書込み関数
+    IspTransferFunction transferFunc;
+
+    /// @brief レスポンス書き込み関数
+    ResponseWriterFunction writeResponse;
+} handler_context_t;
+
+/**
+ * @brief ハンドラコンテキストを初期化する
  *
- * @param context コンテキスト
+ * @param context ハンドラコンテキスト
  * @param transferFunc ISP書込み関数
  * @param responseWriterFunc レスポンス書き込み関数
  */
-void handleCommand(
-    parser_context_t* context,
+void initHandlerContext(
+    handler_context_t* context,
     IspTransferFunction transferFunc,
     ResponseWriterFunction responseWriterFunc);
+
+/**
+ * @brief パーサコンテキストとハンドラコンテキストを渡してコマンドを処理する
+ *
+ * @param parserCtx パーサコンテキスト
+ * @param handlerCtx ハンドラコンテキスト
+ */
+void handleCommand(
+    parser_context_t* parserCtx,
+    handler_context_t* handlerCtx);
 
 #ifdef __cplusplus
 }

@@ -3,255 +3,258 @@
 #include <stddef.h>
 
 #include "core/stk500.h"
+#include "handler_private.h"
 
-// DIされる関数を引数で取り回すと面倒なので、関数ポインタをstatic変数で保持する
-static IspTransferFunction transferData = NULL;
-static ResponseWriterFunction writeResponse = NULL;
-
-static void handleGetSync(parser_context_t* context) {
+void handleGetSync(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleGetSignOn(parser_context_t* context) {
+void handleGetSignOn(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleSetParameter(parser_context_t* context) {
+void handleSetParameter(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleGetParameter(parser_context_t* context) {
+void handleGetParameter(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleSetDevice(parser_context_t* context) {
+void handleSetDevice(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleSetDeviceExt(parser_context_t* context) {
+void handleSetDeviceExt(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleEnterProgMode(parser_context_t* context) {
+void handleEnterProgMode(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleLeaveProgMode(parser_context_t* context) {
+void handleLeaveProgMode(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleChipErase(parser_context_t* context) {
+void handleChipErase(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleCheckAutoInc(parser_context_t* context) {
+void handleCheckAutoInc(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleLoadAddress(parser_context_t* context) {
+void handleLoadAddress(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleUniversal(parser_context_t* context) {
+void handleUniversal(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleUniversalMulti(parser_context_t* context) {
+void handleUniversalMulti(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleProgFlash(parser_context_t* context) {
+void handleProgFlash(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleProgData(parser_context_t* context) {
+void handleProgData(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleProgFuse(parser_context_t* context) {
+void handleProgFuse(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleProgLock(parser_context_t* context) {
+void handleProgLock(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleProgPage(parser_context_t* context) {
+void handleProgPage(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleProgFuseExt(parser_context_t* context) {
+void handleProgFuseExt(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleReadFlash(parser_context_t* context) {
+void handleReadFlash(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleReadData(parser_context_t* context) {
+void handleReadData(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleReadFuse(parser_context_t* context) {
+void handleReadFuse(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleReadLock(parser_context_t* context) {
+void handleReadLock(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleReadPage(parser_context_t* context) {
+void handleReadPage(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleReadSign(parser_context_t* context) {
+void handleReadSign(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleReadOscCal(parser_context_t* context) {
+void handleReadOscCal(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleReadFuseExt(parser_context_t* context) {
+void handleReadFuseExt(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleReadOscCalExt(parser_context_t* context) {
+void handleReadOscCalExt(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     // TODO: 実装
 }
 
-static void handleError(parser_context_t* context) {
-    if (context->state == PARSER_UNKNOWN) {
+void handleError(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+    if (parserCtx->state == PARSER_UNKNOWN) {
         const uint8_t response[] = {STK500_RESP_UNKNOWN};
-        writeResponse(response, sizeof(response));
+        handlerCtx->writeResponse(response, sizeof(response));
         return;
     }
 
     // state = PARSER_ERROR
     const uint8_t response[] = {STK500_RESP_NO_SYNC};
-    writeResponse(response, sizeof(response));
+    handlerCtx->writeResponse(response, sizeof(response));
 }
 
-void handleCommand(parser_context_t* context, IspTransferFunction transferFunc, ResponseWriterFunction responseWriterFunc) {
-    transferData = transferFunc;
-    writeResponse = responseWriterFunc;
+void initHandlerContext(handler_context_t* context, IspTransferFunction transferFunc, ResponseWriterFunction responseWriterFunc) {
+    context->transferFunc = transferFunc;
+    context->writeResponse = responseWriterFunc;
+}
 
-    if (context->state != PARSER_ACCEPTED) {
-        handleError(context);
+void handleCommand(parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+    if (parserCtx->state != PARSER_ACCEPTED) {
+        handleError(parserCtx, handlerCtx);
         return;
     }
 
-    switch (context->command) {
+    switch (parserCtx->command) {
         case STK500_CMD_GET_SYNC:
-            handleGetSync(context);
+            handleGetSync(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_GET_SIGN_ON:
-            handleGetSignOn(context);
+            handleGetSignOn(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_SET_PARAMETER:
-            handleSetParameter(context);
+            handleSetParameter(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_GET_PARAMETER:
-            handleGetParameter(context);
+            handleGetParameter(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_SET_DEVICE:
-            handleSetDevice(context);
+            handleSetDevice(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_SET_DEVICE_EXT:
-            handleSetDeviceExt(context);
+            handleSetDeviceExt(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_ENTER_PROG_MODE:
-            handleEnterProgMode(context);
+            handleEnterProgMode(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_LEAVE_PROG_MODE:
-            handleLeaveProgMode(context);
+            handleLeaveProgMode(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_CHIP_ERASE:
-            handleChipErase(context);
+            handleChipErase(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_CHECK_AUTOINC:
-            handleCheckAutoInc(context);
+            handleCheckAutoInc(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_LOAD_ADDRESS:
-            handleLoadAddress(context);
+            handleLoadAddress(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_UNIVERSAL:
-            handleUniversal(context);
+            handleUniversal(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_UNIVERSAL_MULTI:
-            handleUniversalMulti(context);
+            handleUniversalMulti(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_PROG_FLASH:
-            handleProgFlash(context);
+            handleProgFlash(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_PROG_DATA:
-            handleProgData(context);
+            handleProgData(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_PROG_FUSE:
-            handleProgFuse(context);
+            handleProgFuse(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_PROG_LOCK:
-            handleProgLock(context);
+            handleProgLock(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_PROG_PAGE:
-            handleProgPage(context);
+            handleProgPage(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_PROG_FUSE_EXT:
-            handleProgFuseExt(context);
+            handleProgFuseExt(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_READ_FLASH:
-            handleReadFlash(context);
+            handleReadFlash(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_READ_DATA:
-            handleReadData(context);
+            handleReadData(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_READ_FUSE:
-            handleReadFuse(context);
+            handleReadFuse(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_READ_LOCK:
-            handleReadLock(context);
+            handleReadLock(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_READ_PAGE:
-            handleReadPage(context);
+            handleReadPage(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_READ_SIGN:
-            handleReadSign(context);
+            handleReadSign(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_READ_OSC_CAL:
-            handleReadOscCal(context);
+            handleReadOscCal(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_READ_FUSE_EXT:
-            handleReadFuseExt(context);
+            handleReadFuseExt(parserCtx, handlerCtx);
             break;
 
         case STK500_CMD_READ_OSC_CAL_EXT:
-            handleReadOscCalExt(context);
+            handleReadOscCalExt(parserCtx, handlerCtx);
+            break;
+
+        default:
+            // 何もしない (パーサコンテキストがacceptedなら、ここには落ちないはず)
             break;
     }
 }
