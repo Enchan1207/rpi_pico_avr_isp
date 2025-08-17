@@ -7,9 +7,9 @@ void handleProgData(const parser_context_t* parserCtx, handler_context_t* handle
     uint8_t addressHigh = (address >> 8) & 0xFF;
     uint8_t addressLow = address & 0xFF;
 
-    handlerCtx->transferFunc(0xC0, addressHigh, addressLow, data);
+    handlerCtx->transfer(0xC0, addressHigh, addressLow, data);
     
-    handlerCtx->sleepFunc(11);
+    handlerCtx->sleep(11);
     
     handlerCtx->currentAddress++;
 
@@ -23,7 +23,7 @@ void handleReadData(const parser_context_t* parserCtx, handler_context_t* handle
     uint8_t addressHigh = (address >> 8) & 0xFF;
     uint8_t addressLow = address & 0xFF;
 
-    uint8_t data = handlerCtx->transferFunc(0xA0, addressHigh, addressLow, 0x00);
+    uint8_t data = handlerCtx->transfer(0xA0, addressHigh, addressLow, 0x00);
     
     handlerCtx->currentAddress++;
 

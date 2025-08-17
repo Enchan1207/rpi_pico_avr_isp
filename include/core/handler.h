@@ -69,7 +69,7 @@ typedef struct {
  */
 typedef struct {
     /// @brief ISP書込み関数
-    IspTransferFunction transferFunc;
+    IspTransferFunction transfer;
 
     /// @brief レスポンス書き込み関数
     ResponseWriterFunction writeResponse;
@@ -78,7 +78,7 @@ typedef struct {
     ResetControlFunction resetControl;
 
     /// @brief スリープ関数 (メモリ書き換え時の待機を想定)
-    SleepFunction sleepFunc;
+    SleepFunction sleep;
 
     /// @brief 現在のアドレス
     uint16_t currentAddress;

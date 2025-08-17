@@ -6,7 +6,7 @@ void handleUniversal(const parser_context_t* parserCtx, handler_context_t* handl
     uint8_t byte3 = parserCtx->arguments[2];
     uint8_t byte4 = parserCtx->arguments[3];
 
-    uint8_t result = handlerCtx->transferFunc(byte1, byte2, byte3, byte4);
+    uint8_t result = handlerCtx->transfer(byte1, byte2, byte3, byte4);
 
     const uint8_t response[] = {STK500_RESP_IN_SYNC, result, STK500_RESP_OK};
     handlerCtx->writeResponse(response, sizeof(response));
@@ -27,7 +27,7 @@ void handleUniversalMulti(const parser_context_t* parserCtx, handler_context_t* 
         uint8_t byte3 = parserCtx->arguments[1 + i + 2];
         uint8_t byte4 = parserCtx->arguments[1 + i + 3];
 
-        handlerCtx->transferFunc(byte1, byte2, byte3, byte4);
+        handlerCtx->transfer(byte1, byte2, byte3, byte4);
     }
 
     const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};

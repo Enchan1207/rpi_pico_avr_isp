@@ -16,10 +16,10 @@ void handleError(const parser_context_t* parserCtx, handler_context_t* handlerCt
 }
 
 void initHandlerContext(handler_context_t* context, IspTransferFunction transferFunc, ResponseWriterFunction responseWriterFunc, ResetControlFunction resetControlFunc, SleepFunction sleepFunc) {
-    context->transferFunc = transferFunc;
+    context->transfer = transferFunc;
     context->writeResponse = responseWriterFunc;
     context->resetControl = resetControlFunc;
-    context->sleepFunc = sleepFunc;
+    context->sleep = sleepFunc;
     context->currentAddress = 0;
 }
 

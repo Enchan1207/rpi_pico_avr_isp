@@ -8,10 +8,10 @@ void handleProgFlash(const parser_context_t* parserCtx, handler_context_t* handl
     uint8_t addressHigh = (address >> 8) & 0xFF;
     uint8_t addressLow = address & 0xFF;
 
-    handlerCtx->transferFunc(0x40, addressHigh, addressLow, flashLow);
-    handlerCtx->transferFunc(0x48, addressHigh, addressLow, flashHigh);
+    handlerCtx->transfer(0x40, addressHigh, addressLow, flashLow);
+    handlerCtx->transfer(0x48, addressHigh, addressLow, flashHigh);
 
-    handlerCtx->sleepFunc(14);
+    handlerCtx->sleep(14);
 
     handlerCtx->currentAddress++;
 
@@ -25,8 +25,8 @@ void handleReadFlash(const parser_context_t* parserCtx, handler_context_t* handl
     uint8_t addressHigh = (address >> 8) & 0xFF;
     uint8_t addressLow = address & 0xFF;
 
-    uint8_t flashLow = handlerCtx->transferFunc(0x20, addressHigh, addressLow, 0x00);
-    uint8_t flashHigh = handlerCtx->transferFunc(0x28, addressHigh, addressLow, 0x00);
+    uint8_t flashLow = handlerCtx->transfer(0x20, addressHigh, addressLow, 0x00);
+    uint8_t flashHigh = handlerCtx->transfer(0x28, addressHigh, addressLow, 0x00);
 
     handlerCtx->currentAddress++;
 
