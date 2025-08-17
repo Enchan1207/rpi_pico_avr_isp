@@ -1,7 +1,7 @@
 #include "core/handler.h"
 
-#include "handler_private.h"
 #include "core/stk500.h"
+#include "handler_private.h"
 
 void handleError(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     if (parserCtx->state == PARSER_UNKNOWN) {
