@@ -20,6 +20,7 @@ target_sources(core_test PRIVATE
     handler/test_fuse.cpp
     handler/test_device.cpp
     handler/test_eeprom.cpp
+    handler/test_flash.cpp
 )
 target_link_libraries(core_test PRIVATE
     GTest::gtest_main
