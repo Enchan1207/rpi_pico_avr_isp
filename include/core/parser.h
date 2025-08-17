@@ -71,6 +71,16 @@ uint8_t getCommandArgumentsLength(Stk500Command command);
 void initParserContext(parser_context_t* context);
 
 /**
+ * @brief パーサが終了状態にあるかを返す
+ *
+ * @param context
+ */
+inline bool isStateFinished(const parser_context_t* context) {
+    ParserState state = context->state;
+    return state == PARSER_ACCEPTED || state == PARSER_ERROR;
+}
+
+/**
  * @brief データ読み込み関数
  */
 typedef bool (*DataReaderFunction)(uint8_t* data);
