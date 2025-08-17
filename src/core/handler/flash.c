@@ -1,5 +1,12 @@
 #include "handler_private.h"
 
+// FIXME(claude): 現在の実装は不正確です。0x40/0x48はページバッファへの書き込みコマンドであり、
+// FIXME(claude): 実際のFlashメモリへの書き込みではありません。正しい実装には以下が必要です：
+// FIXME(claude): 1. ページ読み込み (既存ページデータを取得)
+// FIXME(claude): 2. 当該ワードを置き換え
+// FIXME(claude): 3. ページ書き込み (修正されたページ全体をFlashに書き込み)
+// FIXME(claude): page_access.cの実装完了後に修正予定。
+
 void handleProgFlash(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     uint8_t flashLow = parserCtx->arguments[0];
     uint8_t flashHigh = parserCtx->arguments[1];
