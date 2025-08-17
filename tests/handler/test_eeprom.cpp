@@ -26,6 +26,7 @@ TEST_F(EepromHandlerTest, HandleProgDataCommand) {
     std::vector<uint8_t> expectedResponse = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
     ASSERT_EQ(capturedResponse.size(), expectedResponse.size());
     EXPECT_EQ(capturedResponse, expectedResponse);
+    EXPECT_EQ(handlerCtx.currentAddress, 0x0124);  // アドレス自動インクリメントを確認
 }
 
 TEST_F(EepromHandlerTest, HandleReadDataCommand) {
@@ -42,6 +43,7 @@ TEST_F(EepromHandlerTest, HandleReadDataCommand) {
     std::vector<uint8_t> expectedResponse = {STK500_RESP_IN_SYNC, 0x42, STK500_RESP_OK};
     ASSERT_EQ(capturedResponse.size(), expectedResponse.size());
     EXPECT_EQ(capturedResponse, expectedResponse);
+    EXPECT_EQ(handlerCtx.currentAddress, 0x0457);  // アドレス自動インクリメントを確認
 }
 
 TEST_F(EepromHandlerTest, HandleProgDataWithZeroAddress) {
@@ -58,6 +60,7 @@ TEST_F(EepromHandlerTest, HandleProgDataWithZeroAddress) {
     std::vector<uint8_t> expectedResponse = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
     ASSERT_EQ(capturedResponse.size(), expectedResponse.size());
     EXPECT_EQ(capturedResponse, expectedResponse);
+    EXPECT_EQ(handlerCtx.currentAddress, 0x0001);  // アドレス自動インクリメントを確認
 }
 
 }  // namespace
