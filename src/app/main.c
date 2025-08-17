@@ -27,7 +27,7 @@ static uint8_t ispTransfer(uint8_t cmd1, uint8_t cmd2, uint8_t cmd3, uint8_t cmd
 
 static inline void writeResponse(const uint8_t* response, size_t length) {
     for (size_t i = 0; i < length; i++) {
-        putchar(response[i]);
+        uart_putc_raw(uart0, response[i]);
     }
 }
 
@@ -36,7 +36,7 @@ static inline void resetTarget(bool state) {
 }
 
 static bool readData(uint8_t* dst) {
-    int result = getchar_timeout_us(2000000);
+    int result = stdio_getchar_timeout_us(2000000);
     if (result == PICO_ERROR_TIMEOUT) {
         return false;
     }
