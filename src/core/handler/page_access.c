@@ -29,39 +29,51 @@ static uint16_t getCurrentPage(const handler_context_t* handlerCtx) {
 
 void handleProgPage(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     const size_t numberOfBytes = parserCtx->arguments[0] << 8 | parserCtx->arguments[1];
-    uint8_t response[numberOfBytes + 2];
-
     const char memoryType = parserCtx->arguments[2];
     const uint8_t* data = parserCtx->arguments + 3;
 
-    // NOTE: フラッシュメモリの場合1アドレスに対して2byte書き込むため、ループ回数はデータ数の半分でよい
-    const size_t loopCount = memoryType == 'F' ? numberOfBytes >> 1 : numberOfBytes;
-
-    for (size_t i = 0; i < loopCount; i++) {
+    // NOTE: フラッシュメモリの場合1アドレスに対して2byte書き込む
+    const size_t step = memoryType == 'F' ? 2 : 1;
+    for (size_t i = 0; i < numberOfBytes; i += step) {
         const uint16_t base = handlerCtx->currentAddress;
+        const uint16_t currentPage = getCurrentPage(handlerCtx);
 
-        // if (memoryType == 'E') {
-        //     const uint8_t data = handlerCtx->transfer(0xA0, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), 0x00);
+        // 1. バッファに書き込む
+        if (memoryType == 'F') {
+            handlerCtx->transfer(0x40, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), data[i]);
+            handlerCtx->transfer(0x48, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), data[i + 1]);
+        } else {
+            handlerCtx->transfer(0xC0, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), data[i]);
+        }
 
-        //     handlerCtx->sleep(11);
-
-        //     response[index++] = data;
-        // } else {
-        //     const uint8_t dataLow = handlerCtx->transfer(0x20, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), 0x00);
-        //     const uint8_t dataHigh = handlerCtx->transfer(0x28, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), 0x00);
-
-        //     handlerCtx->sleep(14);
-
-        //     response[index++] = dataLow;
-        //     response[index++] = dataHigh;
-        // }
-
+        // 2. アドレスを進める
         handlerCtx->currentAddress = base + 1;
+
+        // 3. ページが変わった場合は、今のページを書き込む
+        if (currentPage == getCurrentPage(handlerCtx)) {
+            continue;
+        }
+
+        if (memoryType == 'F') {
+            handlerCtx->transfer(0x4C, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), 0x00);
+            handlerCtx->sleep(14);
+        } else {
+            handlerCtx->transfer(0xC2, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), 0x00);
+            handlerCtx->sleep(11);
+        }
     }
 
-    // TODO: ページ書き込み
-    const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
-    handlerCtx->writeResponse(response, sizeof(response));
+    // 最後のページを書き込む
+    const uint16_t currentAddress = handlerCtx->currentAddress;
+    if (memoryType == 'F') {
+        handlerCtx->transfer(0x4C, (uint8_t)(currentAddress >> 8), (uint8_t)(currentAddress & 0xFF), 0x00);
+        handlerCtx->sleep(14);
+    } else {
+        handlerCtx->transfer(0xC2, (uint8_t)(currentAddress >> 8), (uint8_t)(currentAddress & 0xFF), 0x00);
+        handlerCtx->sleep(11);
+    }
+
+    handlerCtx->writeResponse((uint8_t[]){STK500_RESP_IN_SYNC, STK500_RESP_OK}, 2);
 }
 
 void handleReadPage(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
@@ -76,12 +88,12 @@ void handleReadPage(const parser_context_t* parserCtx, handler_context_t* handle
         return;
     }
 
-    // NOTE: フラッシュメモリの場合currentAddressがワードアドレスとなるため、ループ回数はデータ数の半分でよい
-    const size_t loopCount = memoryType == 'F' ? numberOfBytes >> 1 : numberOfBytes;
     size_t index = 0;
     response[index++] = STK500_RESP_IN_SYNC;
 
-    for (size_t i = 0; i < loopCount; i++) {
+    // NOTE: フラッシュメモリの場合は1アドレス1ワードとなるため、2byteずつ進む
+    const size_t step = memoryType == 'F' ? 2 : 1;
+    for (size_t i = 0; i < numberOfBytes; i += step) {
         const uint16_t base = handlerCtx->currentAddress;
 
         if (memoryType == 'E') {
