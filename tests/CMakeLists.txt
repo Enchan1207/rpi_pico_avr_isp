@@ -12,6 +12,15 @@ include(GoogleTest)
 add_executable(core_test)
 target_sources(core_test PRIVATE
     test_parser.cpp
+    handler/test_handler.cpp
+    handler/common.cpp
+    handler/test_sync.cpp
+    handler/test_universal.cpp
+    handler/test_program.cpp
+    handler/test_fuse.cpp
+    handler/test_device.cpp
+    handler/test_eeprom.cpp
+    handler/test_flash.cpp
 )
 target_link_libraries(core_test PRIVATE
     GTest::gtest_main
