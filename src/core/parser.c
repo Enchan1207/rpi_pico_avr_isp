@@ -108,7 +108,6 @@ void initParserContext(parser_context_t* context) {
     context->command = STK500_CMD_GET_SYNC;
     context->expectedArgumentsLength = 0;
     context->receivedArgumentsLength = 0;
-    memset(context->arguments, 0, sizeof(context->arguments));
 }
 
 ParserState processParserInput(parser_context_t* context, DataReaderFunction readFunc) {
