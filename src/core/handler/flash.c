@@ -5,7 +5,7 @@ void handleProgFlash(const parser_context_t* parserCtx, handler_context_t* handl
     uint8_t flashHigh = parserCtx->arguments[1];
     uint16_t targetAddress = handlerCtx->currentAddress;
 
-    uint16_t pageStart = getCurrentPage(handlerCtx);
+    uint16_t pageStart = getCurrentFlashPage(handlerCtx);
     uint16_t pageSize = handlerCtx->deviceInfo.pageSize;
     uint16_t pageEnd = pageStart + pageSize - 1;
 
