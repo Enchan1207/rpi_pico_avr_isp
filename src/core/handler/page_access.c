@@ -1,9 +1,6 @@
 #include "handler_private.h"
 
-/// @brief 現在のアドレスが属するページを取得する
-/// @param handlerCtx コンテキスト
-/// @return アドレスに対応するページ
-static uint16_t getCurrentPage(const handler_context_t* handlerCtx) {
+uint16_t getCurrentPage(const handler_context_t* handlerCtx) {
     const uint16_t pageSize = handlerCtx->deviceInfo.pageSize;
     const uint16_t currentAddress = handlerCtx->currentAddress;
 
