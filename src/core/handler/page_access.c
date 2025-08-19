@@ -1,6 +1,6 @@
 #include "handler_private.h"
 
-uint16_t getCurrentPage(const handler_context_t* handlerCtx) {
+uint16_t getCurrentFlashPage(const handler_context_t* handlerCtx) {
     const uint16_t pageSize = handlerCtx->deviceInfo.pageSize;
     const uint16_t currentAddress = handlerCtx->currentAddress;
 
@@ -24,6 +24,30 @@ uint16_t getCurrentPage(const handler_context_t* handlerCtx) {
     return currentAddress;
 }
 
+uint16_t getCurrentEepromPage(const handler_context_t* handlerCtx) {
+    const uint8_t eepromPageSize = handlerCtx->deviceInfo.eepromPageSize;
+    const uint16_t currentAddress = handlerCtx->currentAddress;
+
+    if (eepromPageSize == 4) {
+        return currentAddress >> 2 << 2;
+    }
+
+    if (eepromPageSize == 8) {
+        return currentAddress >> 3 << 3;
+    }
+
+    if (eepromPageSize == 16) {
+        return currentAddress >> 4 << 4;
+    }
+
+    if (eepromPageSize == 32) {
+        return currentAddress >> 5 << 5;
+    }
+
+    // fallback
+    return currentAddress;
+}
+
 void handleProgPage(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     const size_t numberOfBytes = parserCtx->arguments[0] << 8 | parserCtx->arguments[1];
     const char memoryType = parserCtx->arguments[2];
@@ -33,7 +57,7 @@ void handleProgPage(const parser_context_t* parserCtx, handler_context_t* handle
     const size_t step = memoryType == 'F' ? 2 : 1;
     for (size_t i = 0; i < numberOfBytes; i += step) {
         const uint16_t base = handlerCtx->currentAddress;
-        const uint16_t currentPage = getCurrentPage(handlerCtx);
+        const uint16_t currentPage = memoryType == 'F' ? getCurrentFlashPage(handlerCtx) : getCurrentEepromPage(handlerCtx);
 
         // 1. バッファに書き込む
         if (memoryType == 'F') {
@@ -47,7 +71,8 @@ void handleProgPage(const parser_context_t* parserCtx, handler_context_t* handle
         handlerCtx->currentAddress = base + 1;
 
         // 3. ページが変わった場合は、今のページを書き込む
-        if (currentPage == getCurrentPage(handlerCtx)) {
+        const uint16_t newPage = memoryType == 'F' ? getCurrentFlashPage(handlerCtx) : getCurrentEepromPage(handlerCtx);
+        if (currentPage == newPage) {
             continue;
         }
 
