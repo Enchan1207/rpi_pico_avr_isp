@@ -153,6 +153,11 @@ void handleReadOscCalExt(const parser_context_t* parserCtx, handler_context_t* h
  */
 void handleError(const parser_context_t* parserCtx, handler_context_t* handlerCtx);
 
+/**
+ * @brief 現在のアドレスが属するページの開始アドレスを取得する
+ */
+uint16_t getCurrentPage(const handler_context_t* handlerCtx);
+
 #ifdef __cplusplus
 }
 #endif
