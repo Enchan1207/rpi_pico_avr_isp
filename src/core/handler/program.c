@@ -26,6 +26,7 @@ void handleLeaveProgMode(const parser_context_t* parserCtx, handler_context_t* h
 
 void handleChipErase(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     handlerCtx->transfer(0xAC, 0x80, 0x00, 0x00);
+    handlerCtx->sleep(20);
 
     const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
     handlerCtx->writeResponse(response, sizeof(response));
