@@ -64,7 +64,7 @@ void handleProgPage(const parser_context_t* parserCtx, handler_context_t* handle
             handlerCtx->transfer(0x40, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), data[i]);
             handlerCtx->transfer(0x48, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), data[i + 1]);
         } else {
-            handlerCtx->transfer(0xC0, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), data[i]);
+            handlerCtx->transfer(0xC1, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), data[i]);
         }
 
         // 2. アドレスを進める
