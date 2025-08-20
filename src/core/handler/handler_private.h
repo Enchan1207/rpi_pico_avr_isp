@@ -154,6 +154,25 @@ void handleReadOscCalExt(const parser_context_t* parserCtx, handler_context_t* h
 void handleError(const parser_context_t* parserCtx, handler_context_t* handlerCtx);
 
 /**
+ * @brief ターゲットMCUが準備できるまで待機する
+ *
+ * @param handlerCtx ハンドラコンテキスト
+ * @param retryCount リトライ回数
+ * @return リトライ回数内で準備が完了したか
+ *
+ * @note リトライは1msごとに繰り返されます。第2引数に10を指定した場合、最大10ms待機します。
+ */
+static inline bool waitForTargetReady(const handler_context_t* handlerCtx, uint8_t retryCount) {
+    uint8_t isBusy = 1;
+    while (retryCount-- && isBusy) {
+        isBusy = handlerCtx->transfer(0xF0, 0x00, 0x00, 0x00);
+        handlerCtx->sleep(1);
+    }
+
+    return isBusy == 0;
+}
+
+/**
  * @brief 現在のアドレスが属するFlashページの開始アドレスを取得する
  */
 uint16_t getCurrentFlashPage(const handler_context_t* handlerCtx);

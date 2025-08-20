@@ -78,10 +78,10 @@ void handleProgPage(const parser_context_t* parserCtx, handler_context_t* handle
 
         if (memoryType == 'F') {
             handlerCtx->transfer(0x4C, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), 0x00);
-            handlerCtx->sleep(14);
+            waitForTargetReady(handlerCtx, 15);
         } else {
             handlerCtx->transfer(0xC2, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), 0x00);
-            handlerCtx->sleep(11);
+            waitForTargetReady(handlerCtx, 10);
         }
     }
 
@@ -89,10 +89,10 @@ void handleProgPage(const parser_context_t* parserCtx, handler_context_t* handle
     const uint16_t currentAddress = handlerCtx->currentAddress;
     if (memoryType == 'F') {
         handlerCtx->transfer(0x4C, (uint8_t)(currentAddress >> 8), (uint8_t)(currentAddress & 0xFF), 0x00);
-        handlerCtx->sleep(14);
+        waitForTargetReady(handlerCtx, 15);
     } else {
         handlerCtx->transfer(0xC2, (uint8_t)(currentAddress >> 8), (uint8_t)(currentAddress & 0xFF), 0x00);
-        handlerCtx->sleep(11);
+        waitForTargetReady(handlerCtx, 10);
     }
 
     handlerCtx->writeResponse((uint8_t[]){STK500_RESP_IN_SYNC, STK500_RESP_OK}, 2);
@@ -121,14 +121,14 @@ void handleReadPage(const parser_context_t* parserCtx, handler_context_t* handle
         if (memoryType == 'E') {
             const uint8_t data = handlerCtx->transfer(0xA0, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), 0x00);
 
-            handlerCtx->sleep(11);
+            waitForTargetReady(handlerCtx, 10);
 
             response[index++] = data;
         } else {
             const uint8_t dataLow = handlerCtx->transfer(0x20, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), 0x00);
             const uint8_t dataHigh = handlerCtx->transfer(0x28, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), 0x00);
 
-            handlerCtx->sleep(14);
+            waitForTargetReady(handlerCtx, 15);
 
             response[index++] = dataLow;
             response[index++] = dataHigh;
