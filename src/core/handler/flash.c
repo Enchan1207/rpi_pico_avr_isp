@@ -34,7 +34,7 @@ void handleProgFlash(const parser_context_t* parserCtx, handler_context_t* handl
     uint8_t pageStartLow = pageStart & 0xFF;
     handlerCtx->transfer(0x4C, pageStartHigh, pageStartLow, 0x00);
 
-    handlerCtx->sleep(14);
+    waitForTargetReady(handlerCtx, 15);
 
     handlerCtx->currentAddress++;
 

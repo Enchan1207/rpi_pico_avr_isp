@@ -8,9 +8,9 @@ void handleProgData(const parser_context_t* parserCtx, handler_context_t* handle
     uint8_t addressLow = address & 0xFF;
 
     handlerCtx->transfer(0xC0, addressHigh, addressLow, data);
-    
-    handlerCtx->sleep(11);
-    
+
+    waitForTargetReady(handlerCtx, 10);
+
     handlerCtx->currentAddress++;
 
     const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
@@ -24,7 +24,7 @@ void handleReadData(const parser_context_t* parserCtx, handler_context_t* handle
     uint8_t addressLow = address & 0xFF;
 
     uint8_t data = handlerCtx->transfer(0xA0, addressHigh, addressLow, 0x00);
-    
+
     handlerCtx->currentAddress++;
 
     const uint8_t response[] = {STK500_RESP_IN_SYNC, data, STK500_RESP_OK};
