@@ -15,9 +15,6 @@
             "name": "target",
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/build/${presetName}",
-            "environment": {
-                "PICO_SDK_PATH": "$env{HOME}/pico-sdk"
-            },
             "toolchainFile": "$env{PICO_SDK_PATH}/cmake/preload/toolchains/pico_arm_cortex_m0plus_gcc.cmake"
         }
     ],
