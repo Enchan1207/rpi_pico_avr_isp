@@ -11,6 +11,9 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #endif
 
+// STK500のシステムクロックは7.3728MHz
+#define STK500_SYSTEM_CLOCK 7372800
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -137,7 +140,8 @@ void handleCommand(
  * @return 算出されたボーレート
  */
 static inline uint32_t calculateISPBaudRate(uint8_t sckDuration) {
-    double baudRateRaw = 1.0 / (8.0 / 7372800 * MAX(sckDuration, 1));
+    // cf: https://github.com/avrdudes/avrdude/blob/b4403627090582f6c9232920021901eebcd8bf63/src/stk500.c#L1296-L1303
+    double baudRateRaw = 1.0 / (8.0 / STK500_SYSTEM_CLOCK * MAX(sckDuration, 1));
     return (uint32_t)baudRateRaw;
 }
 
@@ -148,8 +152,9 @@ static inline uint32_t calculateISPBaudRate(uint8_t sckDuration) {
  * @return 算出されたSCK_DURATION値
  */
 static inline uint8_t calculateSCKDuration(uint32_t baudRate) {
+    // cf: https://github.com/avrdudes/avrdude/blob/b4403627090582f6c9232920021901eebcd8bf63/src/stk500.c#L1320-L1328
     double durationRaw = 1.0 / baudRate;
-    double duration = 7372800 / 8.0 * durationRaw + 0.5;
+    double duration = STK500_SYSTEM_CLOCK / 8.0 * durationRaw + 0.5;
     return (uint8_t)duration;
 }
 
