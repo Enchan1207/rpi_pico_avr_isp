@@ -23,9 +23,14 @@ void mockSleep(uint32_t milliseconds) {
     // テスト環境では実際の待機は不要
 }
 
+uint32_t mockSetISPBaudRate(uint32_t baudRate) {
+    // テスト環境では要求されたボーレートをそのまま返す
+    return baudRate;
+}
+
 void HandlerTestBase::SetUp() {
     initParserContext(&parserCtx);
-    initHandlerContext(&handlerCtx, mockIspTransfer, mockResponseWriter, mockResetControl, mockSleep);
+    initHandlerContext(&handlerCtx, mockIspTransfer, mockResponseWriter, mockResetControl, mockSleep, mockSetISPBaudRate);
     capturedResponse.clear();
     mockIspTransferReturnValue = 0x00;
     mockResetState = false;

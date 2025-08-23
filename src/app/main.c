@@ -13,6 +13,8 @@ const unsigned int SCK_PIN = 18;
 const unsigned int MOSI_PIN = 19;
 const unsigned int MISO_PIN = 16;
 
+static spi_inst_t* spiInstance;
+
 static uint8_t ispTransfer(uint8_t cmd1, uint8_t cmd2, uint8_t cmd3, uint8_t cmd4) {
     uint8_t responses[4] = {0};
     spi_write_read_blocking(spi0, (uint8_t[]){cmd1, cmd2, cmd3, cmd4}, responses, sizeof(responses));
@@ -35,6 +37,10 @@ static inline void resetTarget(bool state) {
     gpio_put(CS_PIN, state);
 }
 
+static uint32_t setISPBaudRate(uint32_t baudRate) {
+    return spi_set_baudrate(spiInstance, baudRate);
+}
+
 static bool readData(uint8_t* dst) {
     int result = stdio_getchar_timeout_us(2000000);
     if (result == PICO_ERROR_TIMEOUT) {
@@ -48,9 +54,9 @@ static bool readData(uint8_t* dst) {
 int main() {
     stdio_init_all();
 
-    spi_inst_t* spi = spi0;
-    spi_init(spi, 1000000);
-    spi_set_format(spi, 8, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
+    spiInstance = spi0;
+    spi_init(spiInstance, calculateISPBaudRate(0));
+    spi_set_format(spiInstance, 8, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
 
     gpio_init(CS_PIN);
     gpio_set_dir(CS_PIN, GPIO_OUT);
@@ -63,7 +69,7 @@ int main() {
     gpio_set_function(MISO_PIN, GPIO_FUNC_SPI);
 
     handler_context_t handlerCtx;
-    initHandlerContext(&handlerCtx, ispTransfer, writeResponse, resetTarget, sleep_ms);
+    initHandlerContext(&handlerCtx, ispTransfer, writeResponse, resetTarget, sleep_ms, setISPBaudRate);
 
     parser_context_t parserCtx;
 

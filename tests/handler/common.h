@@ -20,6 +20,9 @@ void mockResponseWriter(const uint8_t* response, size_t length);
 extern bool mockResetState;
 void mockResetControl(bool state);
 
+void mockSleep(uint32_t milliseconds);
+uint32_t mockSetISPBaudRate(uint32_t baudRate);
+
 class HandlerTestBase : public ::testing::Test {
 protected:
     void SetUp() override;
