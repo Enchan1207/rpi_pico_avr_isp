@@ -27,7 +27,10 @@ void handleSetParameter(const parser_context_t* parserCtx, handler_context_t* ha
         }
 
         case PARM_STK_SCK_DURATION: {
-            handlerCtx->deviceInfo.sckDuration = parserCtx->arguments[1];
+            uint8_t requestedSckDuration = parserCtx->arguments[1];
+            uint32_t requestedBaudRate = calculateISPBaudRate(requestedSckDuration);
+            uint32_t actualBaudRate = handlerCtx->setISPBaudRate(requestedBaudRate);
+            handlerCtx->deviceInfo.sckDuration = calculateSCKDuration(actualBaudRate);
             const uint8_t okResponse[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
             handlerCtx->writeResponse(okResponse, sizeof(okResponse));
             break;
