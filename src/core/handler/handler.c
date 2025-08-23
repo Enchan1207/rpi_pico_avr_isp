@@ -21,6 +21,16 @@ void initHandlerContext(handler_context_t* context, IspTransferFunction transfer
     context->resetControl = resetControlFunc;
     context->sleep = sleepFunc;
     context->currentAddress = 0;
+    
+    context->deviceInfo.deviceCode = 0;
+    context->deviceInfo.lockBytesLength = 0;
+    context->deviceInfo.fuseBytesLength = 0;
+    context->deviceInfo.pageSize = 0;
+    context->deviceInfo.eepromSize = 0;
+    context->deviceInfo.flashSize = 0;
+    context->deviceInfo.commandSize = 0;
+    context->deviceInfo.eepromPageSize = 0;
+    context->deviceInfo.sckDuration = 0x00;
 }
 
 void handleCommand(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {

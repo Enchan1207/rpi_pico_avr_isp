@@ -20,8 +20,14 @@ void handleSetParameter(const parser_context_t* parserCtx, handler_context_t* ha
         case PARM_STK_VTARGET:
         case PARM_STK_VADJUST:
         case PARM_STK_OSC_PSCALE:
-        case PARM_STK_OSC_CMATCH:
+        case PARM_STK_OSC_CMATCH: {
+            const uint8_t okResponse[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
+            handlerCtx->writeResponse(okResponse, sizeof(okResponse));
+            break;
+        }
+
         case PARM_STK_SCK_DURATION: {
+            handlerCtx->deviceInfo.sckDuration = parserCtx->arguments[1];
             const uint8_t okResponse[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
             handlerCtx->writeResponse(okResponse, sizeof(okResponse));
             break;
@@ -68,8 +74,12 @@ void handleGetParameter(const parser_context_t* parserCtx, handler_context_t* ha
         case PARM_STK_VADJUST:
         case PARM_STK_OSC_PSCALE:
         case PARM_STK_OSC_CMATCH:
-        case PARM_STK_SCK_DURATION:
             value = 0x00;
+            status = STK500_RESP_OK;
+            break;
+
+        case PARM_STK_SCK_DURATION:
+            value = handlerCtx->deviceInfo.sckDuration;
             status = STK500_RESP_OK;
             break;
 

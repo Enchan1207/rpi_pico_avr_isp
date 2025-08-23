@@ -62,6 +62,9 @@ typedef struct {
 
     /// @brief EEPROMページサイズ
     uint8_t eepromPageSize;
+
+    /// @brief SCKクロック持続時間
+    uint8_t sckDuration;
 } device_info_t;
 
 /**
