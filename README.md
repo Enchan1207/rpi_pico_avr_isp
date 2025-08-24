@@ -1,56 +1,25 @@
-# Raspberry Pi PicoでAVR MCUをプログラムする
+# stk500v1_isp
+
+Generic AVR ISP implementation
 
 ## Overview
 
-Raspberry Pi PicoをAVR用のISPとして駆動し、AVRマイコンにプログラムを書き込むことができないか?
+This project is generic ISP (in-system programmer) implementation for AVR microcontrollers.
 
-## Usage
+_Generic_ means hardware-independent; you can install it to any (requirements-fulfilled) MCUs.  
+There is sample implementation for Raspberry Pi Pico at `src/app/main.c` .
 
-本プロジェクトではCMakeを使用しています。また、ジェネレータにはNinjaを採用しています。
+## Specification
 
-構成はホストとターゲット(Raspberry Pi Pico)とで個別に管理され、
-それぞれ `host`, `target` という名称のプリセットが CMakePresets.jsonに定義されています。
+- Communication protocol with PC: STK500 v1 (in details, see [AVR061](https://www.microchip.com/content/dam/mchp/documents/OTH/ApplicationNotes/ApplicationNotes/doc2525.pdf).)
+- Supported MCU requirements:
+  - **<= 128KB** flash capacity (currently ATmega2560 (used on Arduino MEGA 2560) is not supported)
+  - Serial Programming via SPI supported (Fuse `DWEN`, `RSTDISBL` is unprogrammed)
 
-### ホスト向けにビルド
+## Development
 
-構成:
-
-```sh
-cmake --preset host
-```
-
-ビルド:
-
-```sh
-cmake --build --preset host
-```
-
-ビルド結果は `/build/host` 以下に出力されます。
-
-テスト:
-
-```sh
-ctest --preset host
-```
-
-ホスト向けにビルドする場合のみ、 `/tests` 以下のテストコードによる単体テストが可能です。
-
-### ターゲット向けにビルド
-
-構成:
-
-```sh
-cmake --preset target
-```
-
-ビルド:
-
-```sh
-cmake --build --preset target
-```
-
-ビルド結果は `/build/target` 以下に出力されます。
-コンパイルされたバイナリは `/build/target/src/app/rpi_pico_avr_isp.uf2` にあります。
+Thank you for your contribution!
+For more information about development, see [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## License
 
