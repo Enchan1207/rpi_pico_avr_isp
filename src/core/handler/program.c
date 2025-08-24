@@ -1,6 +1,8 @@
 #include "handler_private.h"
 
 void handleEnterProgMode(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+    log("ENTER_PROGMODE");
+
     // NOTE: リセット処理後に20ms以上待機
     // NOTE: cf. AVR910 3. Programming Protocol
     handlerCtx->resetControl(false);
@@ -18,6 +20,8 @@ void handleEnterProgMode(const parser_context_t* parserCtx, handler_context_t* h
 }
 
 void handleLeaveProgMode(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+    log("LEAVE_PROGMODE");
+
     handlerCtx->resetControl(true);
 
     const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
@@ -25,6 +29,8 @@ void handleLeaveProgMode(const parser_context_t* parserCtx, handler_context_t* h
 }
 
 void handleChipErase(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+    log("CHIPERASE");
+
     handlerCtx->transfer(0xAC, 0x80, 0x00, 0x00);
     handlerCtx->sleep(20);
 
@@ -33,6 +39,8 @@ void handleChipErase(const parser_context_t* parserCtx, handler_context_t* handl
 }
 
 void handleCheckAutoInc(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+    log("CHECK_AUTOINC");
+
     // NOTE: このコマンドは常に成功する
     const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
     handlerCtx->writeResponse(response, sizeof(response));
@@ -41,6 +49,8 @@ void handleCheckAutoInc(const parser_context_t* parserCtx, handler_context_t* ha
 void handleLoadAddress(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     uint16_t address = parserCtx->arguments[0] | (parserCtx->arguments[1] << 8);
     handlerCtx->currentAddress = address;
+
+    log("LOADADDR: set to %04X", address);
 
     const uint8_t response[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
     handlerCtx->writeResponse(response, sizeof(response));

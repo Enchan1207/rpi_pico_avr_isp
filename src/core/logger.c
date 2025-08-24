@@ -39,5 +39,5 @@ void debugLog(const char* file, int line, const char* func, const char* format, 
     writeLog(buffer);
 
     // 改行を出力
-    writeLog("\n");
+    writeLog("\r\n");
 }

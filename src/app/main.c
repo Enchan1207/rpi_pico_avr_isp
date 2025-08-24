@@ -86,7 +86,7 @@ int main() {
 
     parser_context_t parserCtx;
 
-    log("System initialized");
+    log("AVRISP 2040");
 
     while (true) {
         initParserContext(&parserCtx);

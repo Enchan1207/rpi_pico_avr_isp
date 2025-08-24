@@ -31,8 +31,8 @@ void initLogger(LogWriteFunction logWriteFunc);
  */
 void debugLog(const char* file, int line, const char* func, const char* format, ...);
 
-/// @brief ログ出力マクロ
 #ifndef NDEBUG
+/// @brief ログ出力マクロ
 #define log(format, ...) debugLog(__FILE__, __LINE__, __func__, format, ##__VA_ARGS__)
 #else
 #define log(format, ...)
