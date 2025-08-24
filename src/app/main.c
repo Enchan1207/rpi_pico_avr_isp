@@ -1,10 +1,12 @@
 #include <hardware/spi.h>
+#include <hardware/uart.h>
 #include <pico/stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 
 #include "core/handler.h"
+#include "core/logger.h"
 #include "core/parser.h"
 
 // connected to RESET# of target MCU
@@ -41,6 +43,10 @@ static uint32_t setISPBaudRate(uint32_t baudRate) {
     return spi_set_baudrate(spiInstance, baudRate);
 }
 
+static void logOutput(const char* message) {
+    uart_puts(uart1, message);
+}
+
 static bool readData(uint8_t* dst) {
     int result = stdio_getchar_timeout_us(2000000);
     if (result == PICO_ERROR_TIMEOUT) {
@@ -53,6 +59,11 @@ static bool readData(uint8_t* dst) {
 
 int main() {
     stdio_init_all();
+
+    uart_init(uart1, 115200);
+    uart_set_format(uart1, 8, 1, 0);
+    gpio_set_function(4, UART_FUNCSEL_NUM(uart1, 4));
+    gpio_set_function(5, UART_FUNCSEL_NUM(uart1, 5));
 
     spiInstance = spi0;
     spi_init(spiInstance, calculateISPBaudRate(0));
@@ -68,10 +79,14 @@ int main() {
     gpio_set_function(MOSI_PIN, GPIO_FUNC_SPI);
     gpio_set_function(MISO_PIN, GPIO_FUNC_SPI);
 
+    initLogger(logOutput);
+
     handler_context_t handlerCtx;
     initHandlerContext(&handlerCtx, ispTransfer, writeResponse, resetTarget, sleep_ms, setISPBaudRate);
 
     parser_context_t parserCtx;
+
+    log("System initialized");
 
     while (true) {
         initParserContext(&parserCtx);
