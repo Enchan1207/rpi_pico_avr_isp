@@ -1,12 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-if(DEFINED CMAKE_TOOLCHAIN_FILE)
-    set(BUILD_FOR_TARGET true)
-else()
-    set(BUILD_FOR_TARGET false)
-endif()
-
-if(${BUILD_FOR_TARGET})
+if($ENV{ENV_NAME} STREQUAL "rp2040")
     include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 endif()
 
@@ -21,10 +15,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(PICO_BOARD pico)
-set(PICO_PLATFORM rp2040)
-
-if(${BUILD_FOR_TARGET})
+if($ENV{ENV_NAME} STREQUAL "rp2040")
     pico_sdk_init()
 endif()
 
@@ -44,7 +35,7 @@ endif()
 
 add_subdirectory(src)
 
-if(NOT ${BUILD_FOR_TARGET})
+if($ENV{ENV_NAME} STREQUAL "host")
     enable_testing()
     add_subdirectory(tests)
 endif()

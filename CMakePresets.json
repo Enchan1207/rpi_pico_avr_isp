@@ -9,16 +9,38 @@
         {
             "name": "host",
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/build/${presetName}"
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "environment": {
+                "ENV_NAME": "host"
+            }
         },
         {
-            "name": "target",
+            "name": "target-rp2040",
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/build/${presetName}",
             "environment": {
-                "PICO_SDK_PATH": "$env{HOME}/pico-sdk"
+                "PICO_SDK_PATH": "$env{HOME}/pico-sdk",
+                "ENV_NAME": "rp2040"
+            },
+            "cacheVariables": {
+                "PICO_BOARD": "pico",
+                "PICO_PLATFORM": "rp2040"
             },
             "toolchainFile": "$env{PICO_SDK_PATH}/cmake/preload/toolchains/pico_arm_cortex_m0plus_gcc.cmake"
+        },
+        {
+            "name": "target-avr",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "environment": {
+                "AVR_SDK_PATH": "$env{HOME}/cmake-avr",
+                "ENV_NAME": "avr"
+            },
+            "cacheVariables": {
+                "AVR_MCU": "atmega328",
+                "AVR_FCPU": "16000000"
+            },
+            "toolchainFile": "$env{AVR_SDK_PATH}/cmake/avr_toolchain.cmake"
         }
     ],
     "buildPresets": [
@@ -27,8 +49,12 @@
             "configurePreset": "host"
         },
         {
-            "name": "target",
-            "configurePreset": "target"
+            "name": "target-rp2040",
+            "configurePreset": "target-rp2040"
+        },
+        {
+            "name": "target-avr",
+            "configurePreset": "target-avr"
         }
     ],
     "testPresets": [
