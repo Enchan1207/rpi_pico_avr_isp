@@ -77,7 +77,7 @@ void initParserContext(parser_context_t* context);
  */
 inline bool isStateFinished(const parser_context_t* context) {
     ParserState state = context->state;
-    return state == PARSER_ACCEPTED || state == PARSER_ERROR;
+    return state == PARSER_ACCEPTED || state == PARSER_ERROR || state == PARSER_UNKNOWN;
 }
 
 /**
