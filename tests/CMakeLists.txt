@@ -11,6 +11,7 @@ include(GoogleTest)
 
 add_executable(core_test)
 target_sources(core_test PRIVATE
+    test_main.cpp
     test_parser.cpp
     handler/test_handler.cpp
     handler/common.cpp
