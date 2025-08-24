@@ -3,6 +3,8 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "core/logger.h"
+
 const uint8_t STK500_EOP = 0x20;
 
 bool isValidCommand(uint8_t commandRaw) {
@@ -143,6 +145,7 @@ ParserState processParserInput(parser_context_t* context, DataReaderFunction rea
 
         case PARSER_RECEIVE_ARGS:
             if (!isDataReceived) {
+                log("communication timed out");
                 context->state = PARSER_ERROR;
                 break;
             }
@@ -185,20 +188,24 @@ ParserState processParserInput(parser_context_t* context, DataReaderFunction rea
 
         case PARSER_EXPECTS_EOP:
             if (!isDataReceived) {
+                log("communication timed out");
                 context->state = PARSER_ERROR;
                 break;
             }
 
             if (data != STK500_EOP) {
+                log("unexpected data received. expected EOP, received %02X", data);
                 context->state = PARSER_ERROR;
                 break;
             }
 
             if (!isValidCommand(context->command)) {
+                log("unknown command received: %02X", context->command);
                 context->state = PARSER_UNKNOWN;
                 break;
             }
 
+            log("parser accepted command: %02X", context->command);
             context->state = PARSER_ACCEPTED;
             break;
 

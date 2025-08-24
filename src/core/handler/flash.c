@@ -5,6 +5,8 @@ void handleProgFlash(const parser_context_t* parserCtx, handler_context_t* handl
     uint8_t flashHigh = parserCtx->arguments[1];
     uint16_t targetAddress = handlerCtx->currentAddress;
 
+    log("PROGFLASH: 0x%04X -> %02X %02X", targetAddress, flashHigh, flashLow);
+
     uint16_t pageStart = getCurrentFlashPage(handlerCtx);
     uint16_t pageSize = handlerCtx->deviceInfo.pageSize;
     uint16_t pageEnd = pageStart + pageSize - 1;
@@ -50,6 +52,8 @@ void handleReadFlash(const parser_context_t* parserCtx, handler_context_t* handl
 
     uint8_t flashLow = handlerCtx->transfer(0x20, addressHigh, addressLow, 0x00);
     uint8_t flashHigh = handlerCtx->transfer(0x28, addressHigh, addressLow, 0x00);
+
+    log("READFLASH: 0x%04X -> %02X %02X", address, flashHigh, flashLow);
 
     handlerCtx->currentAddress++;
 

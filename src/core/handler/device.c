@@ -3,6 +3,7 @@
 
 void handleSetParameter(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     uint8_t parameter = parserCtx->arguments[0];
+    log("SETPARM %02X", parameter);
 
     switch (parameter) {
         case PARM_STK_HW_VER:
@@ -29,8 +30,12 @@ void handleSetParameter(const parser_context_t* parserCtx, handler_context_t* ha
         case PARM_STK_SCK_DURATION: {
             uint8_t requestedSckDuration = parserCtx->arguments[1];
             uint32_t requestedBaudRate = calculateISPBaudRate(requestedSckDuration);
+
             uint32_t actualBaudRate = handlerCtx->setISPBaudRate(requestedBaudRate);
             handlerCtx->deviceInfo.sckDuration = calculateSCKDuration(actualBaudRate);
+
+            log("SCK requested %d, actual %d", requestedBaudRate, actualBaudRate);
+
             const uint8_t okResponse[] = {STK500_RESP_IN_SYNC, STK500_RESP_OK};
             handlerCtx->writeResponse(okResponse, sizeof(okResponse));
             break;
@@ -48,6 +53,8 @@ void handleGetParameter(const parser_context_t* parserCtx, handler_context_t* ha
     uint8_t parameter = parserCtx->arguments[0];
     uint8_t value;
     uint8_t status;
+
+    log("GETPARM %02X", parameter);
 
     switch (parameter) {
         case PARM_STK_HW_VER:
@@ -78,6 +85,7 @@ void handleGetParameter(const parser_context_t* parserCtx, handler_context_t* ha
         case PARM_STK_OSC_PSCALE:
         case PARM_STK_OSC_CMATCH:
             value = 0x00;
+            log("parameter %02X not supported", parameter);
             status = STK500_RESP_OK;
             break;
 
@@ -97,14 +105,15 @@ void handleGetParameter(const parser_context_t* parserCtx, handler_context_t* ha
 }
 
 void handleSetDevice(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+    log("SETDEVICE");
     const uint8_t* args = parserCtx->arguments;
-    
+
     handlerCtx->deviceInfo.deviceCode = args[0];
     handlerCtx->deviceInfo.lockBytesLength = args[6];
     handlerCtx->deviceInfo.fuseBytesLength = args[7];
     handlerCtx->deviceInfo.pageSize = (args[12] << 8) | args[13];
     handlerCtx->deviceInfo.eepromSize = (args[14] << 8) | args[15];
-    handlerCtx->deviceInfo.flashSize = ((uint32_t)args[16] << 24) | 
+    handlerCtx->deviceInfo.flashSize = ((uint32_t)args[16] << 24) |
                                        ((uint32_t)args[17] << 16) |
                                        ((uint32_t)args[18] << 8) |
                                        args[19];
@@ -114,8 +123,9 @@ void handleSetDevice(const parser_context_t* parserCtx, handler_context_t* handl
 }
 
 void handleSetDeviceExt(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+    log("SETDEVICE_EXT");
     const uint8_t* args = parserCtx->arguments;
-    
+
     handlerCtx->deviceInfo.commandSize = args[0];
     handlerCtx->deviceInfo.eepromPageSize = args[1];
 
@@ -124,15 +134,19 @@ void handleSetDeviceExt(const parser_context_t* parserCtx, handler_context_t* ha
 }
 
 void handleReadSign(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+    log("READSIGN");
     uint8_t signHigh = handlerCtx->transfer(0x30, 0x00, 0x00, 0x00);
     uint8_t signMiddle = handlerCtx->transfer(0x30, 0x00, 0x01, 0x00);
     uint8_t signLow = handlerCtx->transfer(0x30, 0x00, 0x02, 0x00);
+
+    log("device signature: %02X %02X %02X", signHigh, signMiddle, signLow);
 
     const uint8_t response[] = {STK500_RESP_IN_SYNC, signHigh, signMiddle, signLow, STK500_RESP_OK};
     handlerCtx->writeResponse(response, sizeof(response));
 }
 
 void handleReadOscCal(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+    log("READOSCCAL");
     uint8_t oscCalByte = handlerCtx->transfer(0x38, 0x00, 0x00, 0x00);
 
     const uint8_t response[] = {STK500_RESP_IN_SYNC, oscCalByte, STK500_RESP_OK};
@@ -140,6 +154,7 @@ void handleReadOscCal(const parser_context_t* parserCtx, handler_context_t* hand
 }
 
 void handleReadOscCalExt(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
+    log("READOSCCAL_EXT");
     uint8_t address = parserCtx->arguments[0];
     uint8_t oscCalByte = handlerCtx->transfer(0x38, 0x00, address, 0x00);
 

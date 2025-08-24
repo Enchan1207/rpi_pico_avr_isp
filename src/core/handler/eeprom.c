@@ -4,6 +4,8 @@ void handleProgData(const parser_context_t* parserCtx, handler_context_t* handle
     uint8_t data = parserCtx->arguments[0];
     uint16_t address = handlerCtx->currentAddress;
 
+    log("PROGDATA: 0x%04X -> %02X", address, data);
+
     uint8_t addressHigh = (address >> 8) & 0xFF;
     uint8_t addressLow = address & 0xFF;
 
@@ -24,6 +26,8 @@ void handleReadData(const parser_context_t* parserCtx, handler_context_t* handle
     uint8_t addressLow = address & 0xFF;
 
     uint8_t data = handlerCtx->transfer(0xA0, addressHigh, addressLow, 0x00);
+
+    log("READDATA: 0x%04X -> %02X", address, data);
 
     handlerCtx->currentAddress++;
 

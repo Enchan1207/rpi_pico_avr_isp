@@ -53,6 +53,8 @@ void handleProgPage(const parser_context_t* parserCtx, handler_context_t* handle
     const char memoryType = parserCtx->arguments[2];
     const uint8_t* data = parserCtx->arguments + 3;
 
+    log("PROGPAGE: %d bytes from %04X to %c", numberOfBytes, handlerCtx->currentAddress, memoryType);
+
     // NOTE: フラッシュメモリの場合1アドレスに対して2byte書き込む
     const size_t step = memoryType == 'F' ? 2 : 1;
     for (size_t i = 0; i < numberOfBytes; i += step) {
@@ -76,6 +78,8 @@ void handleProgPage(const parser_context_t* parserCtx, handler_context_t* handle
             continue;
         }
 
+        log("committing page 0x%04X", currentPage);
+
         if (memoryType == 'F') {
             handlerCtx->transfer(0x4C, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), 0x00);
             waitForTargetReady(handlerCtx, 15);
@@ -87,6 +91,7 @@ void handleProgPage(const parser_context_t* parserCtx, handler_context_t* handle
 
     // 最後のページを書き込む
     const uint16_t currentAddress = handlerCtx->currentAddress;
+    log("committing page 0x%04X", currentAddress);
     if (memoryType == 'F') {
         handlerCtx->transfer(0x4C, (uint8_t)(currentAddress >> 8), (uint8_t)(currentAddress & 0xFF), 0x00);
         waitForTargetReady(handlerCtx, 15);
@@ -103,6 +108,8 @@ void handleReadPage(const parser_context_t* parserCtx, handler_context_t* handle
     uint8_t response[numberOfBytes + 2];
 
     const char memoryType = parserCtx->arguments[2];
+
+    log("READPAGE: %d bytes from %04X to %c", numberOfBytes, handlerCtx->currentAddress, memoryType);
 
     // 不明なメモリタイプ
     if (memoryType != 'E' && memoryType != 'F') {

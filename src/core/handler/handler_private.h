@@ -2,6 +2,7 @@
 #define HANDLER_PRIVATE_H
 
 #include "core/handler.h"
+#include "core/logger.h"
 #include "core/parser.h"
 
 #ifdef __cplusplus
