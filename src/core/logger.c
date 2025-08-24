@@ -1,5 +1,6 @@
 #include "core/logger.h"
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -9,26 +10,34 @@ void initLogger(LogWriteFunction logWriteFunc) {
     writeLog = logWriteFunc;
 }
 
-void debugLog(const char* file, int line, const char* func, const char* message) {
+void debugLog(const char* file, int line, const char* func, const char* format, ...) {
     if (writeLog == NULL) {
         return;
     }
 
-    // ファイル名のパス部分を除去してファイル名のみ取得
     const char* filename = strrchr(file, '/');
     if (filename == NULL) {
         filename = strrchr(file, '\\');
     }
     if (filename != NULL) {
-        filename++;  // '/'の次の文字を指す
+        filename++;
     } else {
-        filename = file;  // パス区切り文字が見つからない場合はそのまま使用
+        filename = file;
     }
 
-    // ログメッセージをフォーマットして出力
-    char logBuffer[256];
-    snprintf(logBuffer, sizeof(logBuffer), "[%s:%d] %s(): %s\n",
-             filename, line, func, message);
+    char buffer[DEBUG_BUFFER_SIZE];
 
-    writeLog(logBuffer);
+    // ヘッダ
+    snprintf(buffer, sizeof(buffer), "[%s:%d] %s(): ", filename, line, func);
+    writeLog(buffer);
+
+    // メッセージ
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+    writeLog(buffer);
+
+    // 改行を出力
+    writeLog("\n");
 }

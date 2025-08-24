@@ -1,6 +1,11 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#ifndef DEBUG_BUFFER_SIZE
+/// @brief デバッグ用バッファサイズ
+#define DEBUG_BUFFER_SIZE 64
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -21,12 +26,17 @@ void initLogger(LogWriteFunction logWriteFunc);
  * @param file ファイル名
  * @param line 行番号
  * @param func 関数名
- * @param message ログメッセージ
+ * @param format フォーマット文字列
+ * @param ... 可変引数
  */
-void debugLog(const char* file, int line, const char* func, const char* message);
+void debugLog(const char* file, int line, const char* func, const char* format, ...);
 
 /// @brief ログ出力マクロ
-#define log(msg) debugLog(__FILE__, __LINE__, __func__, msg)
+#ifndef NDEBUG
+#define log(format, ...) debugLog(__FILE__, __LINE__, __func__, format, ##__VA_ARGS__)
+#else
+#define log(format, ...)
+#endif
 
 #ifdef __cplusplus
 }
