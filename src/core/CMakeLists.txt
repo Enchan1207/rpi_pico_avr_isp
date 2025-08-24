@@ -4,6 +4,7 @@ add_library(core)
 
 target_sources(core PRIVATE
     parser.c
+    logger.c
     handler/handler.c
     handler/sync.c
     handler/device.c
