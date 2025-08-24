@@ -10,6 +10,14 @@ bool waitForTargetReady(const handler_context_t* handlerCtx, uint8_t retryCount)
     return isBusy == 0;
 }
 
+uint16_t getCurrentPage(const handler_context_t* handlerCtx, char memoryType) {
+    if (memoryType == 'F') {
+        return getCurrentFlashPage(handlerCtx);
+    } else {
+        return getCurrentEepromPage(handlerCtx);
+    }
+}
+
 uint16_t getCurrentFlashPage(const handler_context_t* handlerCtx) {
     const uint16_t pageSize = handlerCtx->deviceInfo.pageSize;
     const uint16_t currentAddress = handlerCtx->currentAddress;
@@ -58,6 +66,25 @@ uint16_t getCurrentEepromPage(const handler_context_t* handlerCtx) {
     return currentAddress;
 }
 
+/**
+ * @brief ハンドラが今見ているページをコミットする
+ *
+ * @param handlerCtx コンテキスト
+ * @param memoryType メモリ種別(F=フラッシュメモリ, E=EEPROM)
+ * @param pageAddress 書き込むページのアドレス
+ */
+static void commitPage(handler_context_t* handlerCtx, char memoryType, uint16_t pageAddress) {
+    log("committing page 0x%04X", pageAddress);
+
+    if (memoryType == 'F') {
+        handlerCtx->transfer(0x4C, (uint8_t)(pageAddress >> 8), (uint8_t)(pageAddress & 0xFF), 0x00);
+        waitForTargetReady(handlerCtx, 15);
+    } else {
+        handlerCtx->transfer(0xC2, (uint8_t)(pageAddress >> 8), (uint8_t)(pageAddress & 0xFF), 0x00);
+        waitForTargetReady(handlerCtx, 10);
+    }
+}
+
 void handleProgPage(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     const size_t numberOfBytes = parserCtx->arguments[0] << 8 | parserCtx->arguments[1];
     const char memoryType = parserCtx->arguments[2];
@@ -67,11 +94,10 @@ void handleProgPage(const parser_context_t* parserCtx, handler_context_t* handle
 
     // NOTE: フラッシュメモリの場合1アドレスに対して2byte書き込む
     const size_t step = memoryType == 'F' ? 2 : 1;
+    bool hasUnCommitedPage = false;
     for (size_t i = 0; i < numberOfBytes; i += step) {
         const uint16_t base = handlerCtx->currentAddress;
-        const uint16_t currentPage = memoryType == 'F' ? getCurrentFlashPage(handlerCtx) : getCurrentEepromPage(handlerCtx);
-
-        // 1. バッファに書き込む
+        // バッファに書き込む
         if (memoryType == 'F') {
             handlerCtx->transfer(0x40, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), data[i]);
             handlerCtx->transfer(0x48, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), data[i + 1]);
@@ -79,35 +105,25 @@ void handleProgPage(const parser_context_t* parserCtx, handler_context_t* handle
             handlerCtx->transfer(0xC1, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), data[i]);
         }
 
-        // 2. アドレスを進める
+        // アドレスを進め、ページ境界を跨ぐならコミットする
+        const uint16_t currentPage = getCurrentPage(handlerCtx, memoryType);
         handlerCtx->currentAddress = base + 1;
 
-        // 3. ページが変わった場合は、今のページを書き込む
-        const uint16_t newPage = memoryType == 'F' ? getCurrentFlashPage(handlerCtx) : getCurrentEepromPage(handlerCtx);
-        if (currentPage == newPage) {
+        const uint16_t nextPage = getCurrentPage(handlerCtx, memoryType);
+        if (currentPage == nextPage) {
+            hasUnCommitedPage = true;
             continue;
         }
 
         log("committing page 0x%04X", currentPage);
-
-        if (memoryType == 'F') {
-            handlerCtx->transfer(0x4C, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), 0x00);
-            waitForTargetReady(handlerCtx, 15);
-        } else {
-            handlerCtx->transfer(0xC2, (uint8_t)(base >> 8), (uint8_t)(base & 0xFF), 0x00);
-            waitForTargetReady(handlerCtx, 10);
-        }
+        commitPage(handlerCtx, memoryType, currentPage);
+        hasUnCommitedPage = false;
     }
 
-    // 最後のページを書き込む
-    const uint16_t currentAddress = handlerCtx->currentAddress;
-    log("committing page 0x%04X", currentAddress);
-    if (memoryType == 'F') {
-        handlerCtx->transfer(0x4C, (uint8_t)(currentAddress >> 8), (uint8_t)(currentAddress & 0xFF), 0x00);
-        waitForTargetReady(handlerCtx, 15);
-    } else {
-        handlerCtx->transfer(0xC2, (uint8_t)(currentAddress >> 8), (uint8_t)(currentAddress & 0xFF), 0x00);
-        waitForTargetReady(handlerCtx, 10);
+    // 必要なら最後のページをコミットする
+    if (hasUnCommitedPage) {
+        const uint16_t currentPage = getCurrentPage(handlerCtx, memoryType);
+        commitPage(handlerCtx, memoryType, currentPage);
     }
 
     handlerCtx->writeResponse((uint8_t[]){STK500_RESP_IN_SYNC, STK500_RESP_OK}, 2);
