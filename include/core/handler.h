@@ -103,6 +103,12 @@ typedef struct {
 
     /// @brief デバイス情報
     device_info_t deviceInfo;
+
+    /// @brief レスポンスバッファ
+    uint8_t* responseBuffer;
+
+    /// @brief レスポンスバッファのサイズ
+    uint16_t responseBufferSize;
 } handler_context_t;
 
 /**
@@ -114,6 +120,8 @@ typedef struct {
  * @param resetControlFunc RESET制御関数
  * @param sleepFunc スリープ関数
  * @param setISPBaudRateFunc ISPボーレート設定関数
+ * @param responseBuffer レスポンスバッファ
+ * @param responseBufferSize レスポンスバッファサイズ
  */
 void initHandlerContext(
     handler_context_t* context,
@@ -121,7 +129,9 @@ void initHandlerContext(
     ResponseWriterFunction responseWriterFunc,
     ResetControlFunction resetControlFunc,
     SleepFunction sleepFunc,
-    SetISPBaudRateFunction setISPBaudRateFunc);
+    SetISPBaudRateFunction setISPBaudRateFunc,
+    uint8_t* responseBuffer,
+    uint16_t responseBufferSize);
 
 /**
  * @brief パーサコンテキストとハンドラコンテキストを渡してコマンドを処理する

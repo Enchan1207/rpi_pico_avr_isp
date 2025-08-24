@@ -105,9 +105,14 @@ void handleProgPage(const parser_context_t* parserCtx, handler_context_t* handle
 
 void handleReadPage(const parser_context_t* parserCtx, handler_context_t* handlerCtx) {
     const size_t numberOfBytes = parserCtx->arguments[0] << 8 | parserCtx->arguments[1];
-    uint8_t response[numberOfBytes + 2];
-
     const char memoryType = parserCtx->arguments[2];
+    
+    if (handlerCtx->responseBuffer == NULL || handlerCtx->responseBufferSize < numberOfBytes + 2) {
+        handlerCtx->writeResponse((uint8_t[]){STK500_RESP_NO_SYNC}, 1);
+        return;
+    }
+    
+    uint8_t* response = handlerCtx->responseBuffer;
 
     log("READPAGE: %d bytes from %04X to %c", numberOfBytes, handlerCtx->currentAddress, memoryType);
 

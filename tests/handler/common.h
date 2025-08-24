@@ -29,6 +29,8 @@ protected:
 
     parser_context_t parserCtx;
     handler_context_t handlerCtx;
+    uint8_t argumentsBuffer[259];
+    uint8_t responseBuffer[258];
 };
 
 }  // namespace handler_test

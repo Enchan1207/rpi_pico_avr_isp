@@ -46,7 +46,10 @@ typedef struct {
     uint16_t receivedArgumentsLength;
 
     /// @brief 引数バッファ
-    uint8_t arguments[259];
+    uint8_t* arguments;
+
+    /// @brief 引数バッファのサイズ
+    uint16_t argumentsBufferSize;
 } parser_context_t;
 
 /// @brief 与えられたコードが有効なコマンドかどうかを返す
@@ -66,9 +69,18 @@ uint8_t getCommandArgumentsLength(Stk500Command command);
 /**
  * @brief パーサのコンテキストを初期化する
  *
- * @param context
+ * @param context コンテキスト
+ * @param argumentsBuffer 引数バッファ
+ * @param bufferSize バッファサイズ
  */
-void initParserContext(parser_context_t* context);
+void initParserContext(parser_context_t* context, uint8_t* argumentsBuffer, uint16_t bufferSize);
+
+/**
+ * @brief パーサの状態をリセットする
+ *
+ * @param context コンテキスト
+ */
+void resetParserState(parser_context_t* context);
 
 /**
  * @brief パーサが終了状態にあるかを返す

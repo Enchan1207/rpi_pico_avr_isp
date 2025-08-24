@@ -29,8 +29,8 @@ uint32_t mockSetISPBaudRate(uint32_t baudRate) {
 }
 
 void HandlerTestBase::SetUp() {
-    initParserContext(&parserCtx);
-    initHandlerContext(&handlerCtx, mockIspTransfer, mockResponseWriter, mockResetControl, mockSleep, mockSetISPBaudRate);
+    initParserContext(&parserCtx, argumentsBuffer, sizeof(argumentsBuffer));
+    initHandlerContext(&handlerCtx, mockIspTransfer, mockResponseWriter, mockResetControl, mockSleep, mockSetISPBaudRate, responseBuffer, sizeof(responseBuffer));
     capturedResponse.clear();
     mockIspTransferReturnValue = 0x00;
     mockResetState = false;

@@ -101,7 +101,17 @@ uint8_t getCommandArgumentsLength(Stk500Command command) {
     }
 }
 
-void initParserContext(parser_context_t* context) {
+void initParserContext(parser_context_t* context, uint8_t* argumentsBuffer, uint16_t bufferSize) {
+    if (context == NULL || argumentsBuffer == NULL) {
+        return;
+    }
+
+    context->arguments = argumentsBuffer;
+    context->argumentsBufferSize = bufferSize;
+    resetParserState(context);
+}
+
+void resetParserState(parser_context_t* context) {
     if (context == NULL) {
         return;
     }
@@ -152,6 +162,11 @@ ParserState processParserInput(parser_context_t* context, DataReaderFunction rea
 
             // 格納してインデックスを進める
             uint16_t index = context->receivedArgumentsLength;
+            if (index >= context->argumentsBufferSize) {
+                log("arguments buffer overflow");
+                context->state = PARSER_ERROR;
+                break;
+            }
             context->arguments[index] = data;
             context->receivedArgumentsLength = index + 1;
 

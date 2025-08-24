@@ -81,15 +81,19 @@ int main() {
 
     initLogger(logOutput);
 
+    static uint8_t argumentsBuffer[259];
+    static uint8_t responseBuffer[258];
+
     handler_context_t handlerCtx;
-    initHandlerContext(&handlerCtx, ispTransfer, writeResponse, resetTarget, sleep_ms, setISPBaudRate);
+    initHandlerContext(&handlerCtx, ispTransfer, writeResponse, resetTarget, sleep_ms, setISPBaudRate, responseBuffer, sizeof(responseBuffer));
 
     parser_context_t parserCtx;
+    initParserContext(&parserCtx, argumentsBuffer, sizeof(argumentsBuffer));
 
     log("AVRISP 2040");
 
     while (true) {
-        initParserContext(&parserCtx);
+        resetParserState(&parserCtx);
         while (!isStateFinished(&parserCtx)) {
             processParserInput(&parserCtx, readData);
         }
