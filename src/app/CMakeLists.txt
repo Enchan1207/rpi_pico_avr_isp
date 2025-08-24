@@ -12,4 +12,8 @@ target_link_libraries(rpi_pico_avr_isp
     core
 )
 
+# stdioをUSBに接続する
+pico_enable_stdio_usb(rpi_pico_avr_isp 1)
+pico_enable_stdio_uart(rpi_pico_avr_isp 0)
+
 pico_add_extra_outputs(rpi_pico_avr_isp)
