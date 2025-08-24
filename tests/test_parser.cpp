@@ -40,7 +40,7 @@ MockDataReader* MockDataReader::instance_ = nullptr;
 class ParserTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        initParserContext(&parserCtx);
+        initParserContext(&parserCtx, argumentsBuffer, sizeof(argumentsBuffer));
     }
 
     void setupMockData(const std::vector<uint8_t>& data) {
@@ -49,6 +49,7 @@ protected:
     }
 
     parser_context_t parserCtx;
+    uint8_t argumentsBuffer[259];
     std::unique_ptr<MockDataReader> mockReader_;
 };
 
