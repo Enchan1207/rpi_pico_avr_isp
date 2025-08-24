@@ -15,7 +15,8 @@ const unsigned int SCK_PIN = 18;
 const unsigned int MOSI_PIN = 19;
 const unsigned int MISO_PIN = 16;
 
-static spi_inst_t* spiInstance;
+/// @brief パーサ・ハンドラ共用バッファ
+static uint8_t buffer[259];
 
 static uint8_t ispTransfer(uint8_t cmd1, uint8_t cmd2, uint8_t cmd3, uint8_t cmd4) {
     uint8_t responses[4] = {0};
@@ -29,18 +30,18 @@ static uint8_t ispTransfer(uint8_t cmd1, uint8_t cmd2, uint8_t cmd3, uint8_t cmd
     return responses[3];
 }
 
-static inline void writeResponse(const uint8_t* response, size_t length) {
+static void writeResponse(const uint8_t* response, size_t length) {
     for (size_t i = 0; i < length; i++) {
         stdio_putchar_raw(response[i]);
     }
 }
 
-static inline void resetTarget(bool state) {
+static void resetTarget(bool state) {
     gpio_put(CS_PIN, state);
 }
 
 static uint32_t setISPBaudRate(uint32_t baudRate) {
-    return spi_set_baudrate(spiInstance, baudRate);
+    return spi_set_baudrate(spi0, baudRate);
 }
 
 static void logOutput(const char* message) {
@@ -65,9 +66,8 @@ int main() {
     gpio_set_function(4, UART_FUNCSEL_NUM(uart1, 4));
     gpio_set_function(5, UART_FUNCSEL_NUM(uart1, 5));
 
-    spiInstance = spi0;
-    spi_init(spiInstance, calculateISPBaudRate(0));
-    spi_set_format(spiInstance, 8, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
+    spi_init(spi0, calculateISPBaudRate(0));
+    spi_set_format(spi0, 8, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
 
     gpio_init(CS_PIN);
     gpio_set_dir(CS_PIN, GPIO_OUT);
@@ -81,14 +81,11 @@ int main() {
 
     initLogger(logOutput);
 
-    static uint8_t argumentsBuffer[259];
-    static uint8_t responseBuffer[258];
-
     handler_context_t handlerCtx;
-    initHandlerContext(&handlerCtx, ispTransfer, writeResponse, resetTarget, sleep_ms, setISPBaudRate, responseBuffer, sizeof(responseBuffer));
+    initHandlerContext(&handlerCtx, ispTransfer, writeResponse, resetTarget, sleep_ms, setISPBaudRate, buffer, sizeof(buffer));
 
     parser_context_t parserCtx;
-    initParserContext(&parserCtx, argumentsBuffer, sizeof(argumentsBuffer));
+    initParserContext(&parserCtx, buffer, sizeof(buffer));
 
     log("AVRISP 2040");
 

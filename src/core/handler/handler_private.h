@@ -163,15 +163,7 @@ void handleError(const parser_context_t* parserCtx, handler_context_t* handlerCt
  *
  * @note リトライは1msごとに繰り返されます。第2引数に10を指定した場合、最大10ms待機します。
  */
-static inline bool waitForTargetReady(const handler_context_t* handlerCtx, uint8_t retryCount) {
-    uint8_t isBusy = 1;
-    while (retryCount-- && isBusy) {
-        isBusy = handlerCtx->transfer(0xF0, 0x00, 0x00, 0x00);
-        handlerCtx->sleep(1);
-    }
-
-    return isBusy == 0;
-}
+bool waitForTargetReady(const handler_context_t* handlerCtx, uint8_t retryCount);
 
 /**
  * @brief 現在のアドレスが属するFlashページの開始アドレスを取得する
